@@ -29,6 +29,14 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## API Documentation
+
+This project includes a fully documented API using Swagger/OpenAPI.
+
+- **Documentation UI**: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+- **OpenAPI Spec**: [http://localhost:3000/api/swagger](http://localhost:3000/api/swagger)
+- **Detailed Guide**: See [API_DOCS.md](./API_DOCS.md) for more information.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

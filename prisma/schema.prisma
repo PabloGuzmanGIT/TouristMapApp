@@ -1,0 +1,238 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+//generator client {
+//  provider = "prisma-client"
+//  output   = "../src/generated/prisma"
+//}
+
+//datasource db {
+//  provider = "postgresql"
+//  url      = env("DATABASE_URL")
+//}
+
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PlaceCategory {
+  // Gastronomía y comercio
+  restaurant
+  cafe
+  bar
+  market
+
+  // Turismo / cultura
+  turistico
+  historico
+  museo
+  iglesia
+  plaza_parque
+  centro_cultural
+
+  // Naturaleza
+  naturaleza
+  mirador
+  sendero
+  cascada_laguna
+
+  // Tiendas y artesanías
+  tienda
+  artesania
+
+  // Servicios públicos/útiles
+  servicio
+  salud
+  banco
+  policia
+  municipalidad
+  transporte
+
+  // Información / trabajo / energía
+  infoturismo
+  cowork
+  gasolinera
+
+  // Alojamiento & otros
+  alojamiento
+  instagrameable
+  random
+}
+
+enum PublishStatus {
+  draft
+  pending
+  published
+  rejected
+}
+
+model City {
+  id   String @id @default(cuid())
+  slug String @unique
+  name String
+
+  // cámara del mapa
+  centerLat Float
+  centerLng Float
+  bboxW     Float?
+  bboxS     Float?
+  bboxE     Float?
+  bboxN     Float?
+
+  areas  Area[]
+  places Place[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Area {
+  id     String @id @default(cuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  slug   String
+  name   String
+  status PublishStatus @default(published)
+
+  // cámara del mapa
+  centerLat Float
+  centerLng Float
+  bboxW     Float?
+  bboxS     Float?
+  bboxE     Float?
+  bboxN     Float?
+
+  places Place[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // slug único dentro de la ciudad
+  @@unique([cityId, slug])
+  @@index([cityId, status])
+}
+
+model Place {
+  id     String @id @default(cuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  areaId String?
+  area   Area?   @relation(fields: [areaId], references: [id], onDelete: SetNull)
+
+  slug     String
+  name     String
+  category PlaceCategory
+  status   PublishStatus @default(published)
+  featured Boolean       @default(false)
+
+  // geolocalización
+  lat Float
+  lng Float
+
+  // contenido de ficha
+  short      String?
+  details    Json? // JSONB libre (amenities, accessibility, tags, etc.)
+  images     Json? // string[] (URLs de Cloudinary)
+  rating     Float? // rating propio (si defines uno manual)
+  bookingUrl String?
+  website    String?
+  phone      String?
+  address    String?
+  schedule   Json? // { mon:[{open,close}], ... } + excepciones si quieres
+
+  // agregados de reseñas (publicadas)
+  ratingAvg   Float @default(0)
+  ratingCount Int   @default(0)
+
+  reviews PlaceReview[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // slug único por ciudad
+  @@unique([cityId, slug])
+  @@index([areaId])
+  @@index([status])
+  @@index([category])
+}
+
+model User {
+  id    String  @id @default(cuid())
+  email String? @unique
+  name  String?
+  // añade NextAuth Accounts/Sessions en otro archivo si lo necesitas
+
+  reviews  PlaceReview[]
+  comments ReviewComment[]
+
+  createdAt     DateTime        @default(now())
+  ReviewHelpful ReviewHelpful[]
+}
+
+model PlaceReview {
+  id      String @id @default(cuid())
+  placeId String
+  place   Place  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  rating  Int // 1..5
+  title   String?
+  content String?
+  images  Json? // string[] opcional
+  status  PublishStatus @default(pending)
+
+  helpful  ReviewHelpful[]
+  comments ReviewComment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Nota: con userId nullable, este unique no limita anónimos (varios NULL son válidos en Postgres).
+  // Úsalo si tendrás auth; si no, controla por IP/cookie en la lógica.
+  @@unique([placeId, userId])
+  @@index([placeId, status, createdAt])
+}
+
+model ReviewHelpful {
+  id       String      @id @default(cuid())
+  reviewId String
+  review   PlaceReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+}
+
+model ReviewComment {
+  id       String      @id @default(cuid())
+  reviewId String
+  review   PlaceReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  content String
+  status  PublishStatus @default(published)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reviewId, status, createdAt])
+}
