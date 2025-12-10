@@ -62,14 +62,14 @@ export async function GET(req: Request) {
       where,
       include: {
         city: {
-          select: { slug: true }
+          select: { slug: true, name: true }
         }
       },
       orderBy: [
         { featured: 'desc' },
         { createdAt: 'desc' }
       ],
-      take: 20
+      take: citySlug ? 20 : 100 // Return more for admin panel
     })
 
     // Transform to match expected frontend format
@@ -78,8 +78,13 @@ export async function GET(req: Request) {
       slug: p.slug,
       name: p.name,
       category: p.category,
+      status: p.status,
       featured: p.featured,
       citySlug: p.city.slug,
+      city: {
+        slug: p.city.slug,
+        name: p.city.name
+      },
       location: { lat: p.lat, lng: p.lng },
       short: p.short,
       images: p.images as string[] | undefined,

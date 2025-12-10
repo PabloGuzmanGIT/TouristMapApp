@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${outfit.variable} font-sans antialiased bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50`}
+        className={`${outfit.variable} font-sans antialiased bg-background text-foreground`}
       >
         <Navbar />
         {children}

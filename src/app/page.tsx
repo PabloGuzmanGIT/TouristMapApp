@@ -45,26 +45,26 @@ export default async function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-violet-500/20 to-pink-500/20 blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
             <Sparkles className="w-4 h-4" />
             <span>Descubre {placesCount.toLocaleString()} lugares increíbles</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
               Descubre lo mejor
             </span>
             <br />
-            <span className="text-neutral-900 dark:text-neutral-100">del Perú</span>
+            <span className="text-foreground">del Perú</span>
           </h1>
 
-          <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+          <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
             Explora lugares turísticos, gastronómicos, históricos y naturales en los 24 departamentos del Perú.
           </p>
 
@@ -79,7 +79,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold">Departamentos Destacados</h2>
-            <Link href="/explorar" className="text-blue-600 hover:text-blue-700 flex items-center gap-1">
+            <Link href="/explorar" className="text-primary hover:text-primary/80 flex items-center gap-1">
               Ver todos <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
@@ -89,14 +89,14 @@ export default async function HomePage() {
               <Link
                 key={dept.slug}
                 href={`/${dept.slug}`}
-                className="bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-2xl p-6 hover:shadow-xl transition-all group"
+                className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-6 hover:shadow-xl transition-all group"
               >
                 <div className="text-center space-y-2">
-                  <div className="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
                     {dept.name.charAt(0)}
                   </div>
                   <h3 className="font-semibold">{dept.name}</h3>
-                  <p className="text-sm text-neutral-500">{dept._count.places} lugares</p>
+                  <p className="text-sm text-foreground/60">{dept._count.places} lugares</p>
                 </div>
               </Link>
             ))}
@@ -109,7 +109,7 @@ export default async function HomePage() {
         <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-black/50">
           <div className="mx-auto max-w-7xl">
             <div className="flex items-center gap-2 mb-8">
-              <TrendingUp className="w-8 h-8 text-blue-600" />
+              <TrendingUp className="w-8 h-8 text-primary" />
               <h2 className="text-3xl font-bold">Lugares Destacados</h2>
             </div>
 
@@ -118,7 +118,7 @@ export default async function HomePage() {
                 <Link
                   key={place.id}
                   href={`/${place.city.slug}/places/${place.slug}`}
-                  className="bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl transition-all group"
+                  className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl overflow-hidden hover:shadow-xl transition-all group"
                 >
                   {place.images && Array.isArray(place.images) && (place.images as string[])[0] && (
                     <div className="relative h-40 bg-neutral-200 dark:bg-neutral-800">
@@ -136,7 +136,7 @@ export default async function HomePage() {
                       {place.city.name}
                     </p>
                     {place.short && (
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
+                      <p className="text-sm text-foreground/70 line-clamp-2">
                         {place.short}
                       </p>
                     )}
@@ -158,11 +158,11 @@ export default async function HomePage() {
               <Link
                 key={cat.slug}
                 href={`/categoria/${cat.slug}`}
-                className="bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-2xl p-8 hover:shadow-xl transition-all text-center group"
+                className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-8 hover:shadow-xl transition-all text-center group"
               >
                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{cat.icon}</div>
                 <h3 className="font-bold text-lg mb-2">{cat.name}</h3>
-                <p className="text-sm text-neutral-500">{cat.count} lugares</p>
+                <p className="text-sm text-foreground/60">{cat.count} lugares</p>
               </Link>
             ))}
           </div>
@@ -179,7 +179,7 @@ export default async function HomePage() {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-medium">
             <Sparkles className="w-4 h-4" />
             <span>Contribuye a la comunidad</span>
           </div>
@@ -188,13 +188,13 @@ export default async function HomePage() {
             ¿Conoces un lugar increíble?
           </h2>
 
-          <p className="text-xl text-neutral-600 dark:text-neutral-400">
+          <p className="text-xl text-foreground/70">
             Comparte tus descubrimientos y ayuda a otros viajeros a encontrar joyas escondidas en el Perú.
           </p>
 
           <Link
             href="/add-place"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white px-8 py-4 rounded-full text-lg font-medium hover:shadow-2xl transition-all"
+            className="inline-flex items-center gap-2 bg-accent text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-accent/90 hover:shadow-2xl transition-all shadow-accent/20"
           >
             <Plus className="w-5 h-5" />
             Agregar un Lugar
@@ -208,7 +208,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <MapPin className="w-6 h-6 text-blue-400" />
+                <MapPin className="w-6 h-6 text-primary" />
                 <span className="text-xl font-bold text-white">Explora Perú</span>
               </div>
               <p className="text-sm">

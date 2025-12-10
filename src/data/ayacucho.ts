@@ -8,7 +8,7 @@ const data: CityData = {
     center: { lat: -13.1631, lng: -74.2244 },
     // bbox opcional: [-74.245, -13.178, -74.200, -13.150]
   },
-    areas: [
+  areas: [
     {
       slug: 'quinua',
       citySlug: 'ayacucho',

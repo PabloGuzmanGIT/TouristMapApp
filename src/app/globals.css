@@ -1,22 +1,49 @@
 @import 'maplibre-gl/dist/maplibre-gl.css';
-
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
   --font-sans: var(--font-outfit), system-ui, sans-serif;
+}
+
+:root {
+  /* Stone 50 - Warm/Organic Background */
+  --background: #fafaf9;
+  /* Stone 900 */
+  --foreground: #1c1917;
+
+  /* Teal 600 - Nature & Trust */
+  --primary: #0d9488;
+  --primary-foreground: #ffffff;
+
+  /* Violet 600 - Culture & Mystery */
+  --secondary: #7c3aed;
+
+  /* Rose 500 - Action & Vibrancy */
+  --accent: #f43f5e;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Stone 950 - Premium Dark */
+    --background: #0c0a09;
+    /* Stone 50 */
+    --foreground: #fafaf9;
+
+    /* Teal 400 - Bright for Dark Mode */
+    --primary: #2dd4bf;
+    --primary-foreground: #000000;
+
+    /* Violet 400 */
+    --secondary: #a78bfa;
+
+    /* Rose 500 */
+    --accent: #f43f5e;
   }
 }
 
