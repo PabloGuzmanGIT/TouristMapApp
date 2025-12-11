@@ -1,0 +1,28 @@
+# ===================================
+# NUEVA BASE DE DATOS SUPABASE
+# ===================================
+
+# Para la aplicación (con pooling)
+DATABASE_URL="postgres://postgres.znrivyvbxcfggazcatew:iP5O2C3clKdFodkT@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+# Para migraciones (conexión directa - IMPORTANTE: usa db.znrivyvbxcfggazcatew.supabase.co)
+DIRECT_URL="postgres://postgres:iP5O2C3clKdFodkT@db.znrivyvbxcfggazcatew.supabase.co:5432/postgres"
+
+# ===================================
+# BASE DE DATOS LOCAL (COMENTADA)
+# ===================================
+#DATABASE_URL="postgresql://postgres:root@localhost:5432/MapActivitiesBusiness?schema=public"
+
+# ===================================
+# OTRAS VARIABLES
+# ===================================
+NEXT_PUBLIC_MAPTILER_KEY=n3Ig3kuPCQvO75LfszSi
+ADMIN_PASSWORD=consantino
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=8RcNWkfMfOvUscSdRDcC1iSZ2JEe6h0bMGJ3bvOffN4=
+RESEND_API_KEY=re_54AHrfg1_2uuG9jU3QQE3PyexE9D4gewS
+EMAIL_FROM=guzmagp23@gmail.com
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://znrivyvbxcfggazcatew.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpucml2eXZieGNmZ2dhemNhdGV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU0NjEzMzUsImV4cCI6MjA4MTAzNzMzNX0.mZ316cRJeTjq3hx5xbsHgILrjCY2glWZj5mqpXGJX1Y
