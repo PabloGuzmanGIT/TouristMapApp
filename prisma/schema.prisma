@@ -9,16 +9,11 @@
 //  output   = "../src/generated/prisma"
 //}
 
-//datasource db {
-//  provider = "postgresql"
-//  url      = env("DATABASE_URL")
-//}
-
 // prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")  // Comentado temporalmente para usar pooler
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
