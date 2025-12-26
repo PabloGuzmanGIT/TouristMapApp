@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Trash2, Eye, MapPin, Image as ImageIcon, Globe, Phone, Clock, Star } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Eye, MapPin, Image as ImageIcon, Globe, Phone, Clock, Star, Upload, X } from 'lucide-react'
 import Link from 'next/link'
+import { CldUploadWidget } from 'next-cloudinary'
 
 type PlaceFormData = {
     name: string
@@ -450,26 +451,71 @@ export default function EditPlacePage({ params }: { params: Promise<{ id: string
                         </button>
                     </div>
 
-                    {formData.images.map((img, index) => (
-                        <div key={index} className="flex gap-2">
-                            <input
-                                type="url"
-                                value={img}
-                                onChange={(e) => updateImage(index, e.target.value)}
-                                className="flex-1 px-4 py-2 border border-foreground/20 rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
-                                placeholder="https://..."
-                            />
-                            {formData.images.length > 1 && (
-                                <button
-                                    type="button"
-                                    onClick={() => removeImageField(index)}
-                                    className="px-3 py-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {formData.images.map((img, index) => (
+                            <div key={index} className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <label className="block text-sm font-medium">
+                                        Imagen {index + 1}
+                                    </label>
+                                    {formData.images.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImageField(index)}
+                                            className="text-xs text-red-600 hover:underline"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    )}
+                                </div>
+
+                                {img ? (
+                                    <div className="relative">
+                                        <img
+                                            src={img}
+                                            alt={`Preview ${index + 1}`}
+                                            className="w-full h-48 object-cover rounded-lg border border-foreground/20"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => updateImage(index, '')}
+                                            className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors"
+                                            title="Eliminar imagen"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <CldUploadWidget
+                                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'tourism-map-places'}
+                                        options={{
+                                            maxFiles: 1,
+                                            maxFileSize: 5000000, // 5MB
+                                            clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
+                                            folder: 'tourism-map/places',
+                                        }}
+                                        onSuccess={(result: any) => {
+                                            if (result.event === 'success') {
+                                                updateImage(index, result.info.secure_url)
+                                            }
+                                        }}
+                                    >
+                                        {({ open }) => (
+                                            <button
+                                                type="button"
+                                                onClick={() => open()}
+                                                className="w-full h-48 border-2 border-dashed border-foreground/20 rounded-lg hover:border-primary transition-colors flex flex-col items-center justify-center gap-2 text-foreground/60 hover:text-primary"
+                                            >
+                                                <Upload className="w-8 h-8" />
+                                                <span className="text-sm font-medium">Subir Imagen</span>
+                                                <span className="text-xs">JPG, PNG, WEBP (máx 5MB)</span>
+                                            </button>
+                                        )}
+                                    </CldUploadWidget>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Contact & Booking */}
