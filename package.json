@@ -23,6 +23,7 @@
     "lucide-react": "^0.555.0",
     "maplibre-gl": "^5.9.0",
     "next": "^16.0.8",
+    "next-cloudinary": "^6.17.5",
     "ngrok": "^5.0.0-beta.2",
     "postgres": "^3.4.7",
     "prisma": "^6.19.0",
