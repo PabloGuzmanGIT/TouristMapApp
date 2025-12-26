@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import type { LatLng, PlaceCategory } from '@/types'
-import { MapPin, Image as ImageIcon, FileText, Check, Loader2 } from 'lucide-react'
+import { MapPin, Image as ImageIcon, FileText, Check, Loader2, Upload, X } from 'lucide-react'
+import { CldUploadWidget } from 'next-cloudinary'
 
 function slugify(s: string) {
   return s.toLowerCase().trim()
@@ -378,23 +379,102 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Image 1 */}
           <div>
-            <label className="block text-sm font-medium mb-2">URL de imagen 1</label>
-            <input
-              className="w-full border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={img1}
-              onChange={(e) => setImg1(e.target.value)}
-              placeholder="https://..."
-            />
+            <label className="block text-sm font-medium mb-2">Imagen 1</label>
+            {img1 ? (
+              <div className="relative">
+                <img
+                  src={img1}
+                  alt="Preview 1"
+                  className="w-full h-48 object-cover rounded-lg border border-neutral-300 dark:border-neutral-700"
+                />
+                <button
+                  type="button"
+                  onClick={() => setImg1('')}
+                  className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors"
+                  title="Eliminar imagen"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <CldUploadWidget
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'tourism-map-places'}
+                options={{
+                  maxFiles: 1,
+                  maxFileSize: 5000000, // 5MB
+                  clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
+                  folder: 'tourism-map/places',
+                }}
+                onSuccess={(result: any) => {
+                  if (result.event === 'success') {
+                    setImg1(result.info.secure_url)
+                  }
+                }}
+              >
+                {({ open }) => (
+                  <button
+                    type="button"
+                    onClick={() => open()}
+                    className="w-full h-48 border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center justify-center gap-2 text-neutral-500 hover:text-blue-600"
+                  >
+                    <Upload className="w-8 h-8" />
+                    <span className="text-sm font-medium">Subir Imagen</span>
+                    <span className="text-xs">JPG, PNG, WEBP (máx 5MB)</span>
+                  </button>
+                )}
+              </CldUploadWidget>
+            )}
           </div>
+
+          {/* Image 2 */}
           <div>
-            <label className="block text-sm font-medium mb-2">URL de imagen 2 (opcional)</label>
-            <input
-              className="w-full border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={img2}
-              onChange={(e) => setImg2(e.target.value)}
-              placeholder="https://..."
-            />
+            <label className="block text-sm font-medium mb-2">Imagen 2 (opcional)</label>
+            {img2 ? (
+              <div className="relative">
+                <img
+                  src={img2}
+                  alt="Preview 2"
+                  className="w-full h-48 object-cover rounded-lg border border-neutral-300 dark:border-neutral-700"
+                />
+                <button
+                  type="button"
+                  onClick={() => setImg2('')}
+                  className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors"
+                  title="Eliminar imagen"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <CldUploadWidget
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'tourism-map-places'}
+                options={{
+                  maxFiles: 1,
+                  maxFileSize: 5000000, // 5MB
+                  clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
+                  folder: 'tourism-map/places',
+                }}
+                onSuccess={(result: any) => {
+                  if (result.event === 'success') {
+                    setImg2(result.info.secure_url)
+                  }
+                }}
+              >
+                {({ open }) => (
+                  <button
+                    type="button"
+                    onClick={() => open()}
+                    className="w-full h-48 border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center justify-center gap-2 text-neutral-500 hover:text-blue-600"
+                  >
+                    <Upload className="w-8 h-8" />
+                    <span className="text-sm font-medium">Subir Imagen</span>
+                    <span className="text-xs">JPG, PNG, WEBP (máx 5MB)</span>
+                  </button>
+                )}
+              </CldUploadWidget>
+            )}
           </div>
         </div>
       </div>
