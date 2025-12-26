@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { LatLng, PlaceCategory } from '@/types'
 import { MapPin, Image as ImageIcon, FileText, Check, Loader2, Upload, X } from 'lucide-react'
 import { CldUploadWidget } from 'next-cloudinary'
+import { parseCoordinate } from '@/lib/coordinates'
 
 function slugify(s: string) {
   return s.toLowerCase().trim()
@@ -45,8 +46,10 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
   const [name, setName] = useState('')
   const [category, setCategory] = useState<PlaceCategory>('turistico')
   const [featured, setFeatured] = useState(false)
-  const [lat, setLat] = useState<number | ''>('')
-  const [lng, setLng] = useState<number | ''>('')
+  const [lat, setLat] = useState<string>('')
+  const [lng, setLng] = useState<string>('')
+  const [latDecimal, setLatDecimal] = useState<number | ''>('')
+  const [lngDecimal, setLngDecimal] = useState<number | ''>('')
   const [short, setShort] = useState('')
   const [img1, setImg1] = useState('')
   const [img2, setImg2] = useState('')
@@ -91,8 +94,12 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
   // Update coordinates when picked from map
   useEffect(() => {
     if (pickedCoord) {
-      setLat(Number(pickedCoord.lat.toFixed(6)))
-      setLng(Number(pickedCoord.lng.toFixed(6)))
+      const latVal = pickedCoord.lat.toFixed(6)
+      const lngVal = pickedCoord.lng.toFixed(6)
+      setLat(latVal)
+      setLng(lngVal)
+      setLatDecimal(Number(latVal))
+      setLngDecimal(Number(lngVal))
     }
   }, [pickedCoord])
 
@@ -113,8 +120,12 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
         })
       })
 
-      setLat(Number(position.coords.latitude.toFixed(6)))
-      setLng(Number(position.coords.longitude.toFixed(6)))
+      const latVal = position.coords.latitude.toFixed(6)
+      const lngVal = position.coords.longitude.toFixed(6)
+      setLat(latVal)
+      setLng(lngVal)
+      setLatDecimal(Number(latVal))
+      setLngDecimal(Number(lngVal))
 
     } catch (error: any) {
       let errorMsg = 'No se pudo obtener tu ubicación.'
@@ -133,7 +144,7 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
     }
   }
 
-  const canSave = citySlug && name && lat !== '' && lng !== ''
+  const canSave = citySlug && name && latDecimal !== '' && lngDecimal !== ''
 
   const handleSubmit = async () => {
     if (!canSave || submitting) return
@@ -147,8 +158,8 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
         slug,
         category,
         featured,
-        lat: Number(lat),
-        lng: Number(lng),
+        lat: Number(latDecimal),
+        lng: Number(lngDecimal),
         short: short || undefined,
         images: [img1, img2].filter(Boolean),
       }
@@ -162,6 +173,8 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
       setImg2('')
       setLat('')
       setLng('')
+      setLatDecimal('')
+      setLngDecimal('')
       setFeatured(false)
     } catch (error) {
       console.error('Error submitting:', error)
@@ -330,26 +343,52 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
           <div>
             <label className="block text-sm font-medium mb-2">Latitud</label>
             <input
-              type="number"
-              step="0.000001"
+              type="text"
               className="w-full border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={lat}
-              onChange={(e) => setLat(e.target.value === '' ? '' : Number(e.target.value))}
-              placeholder="-13.1635"
+              onChange={(e) => {
+                const value = e.target.value
+                setLat(value)
+                const parsed = parseCoordinate(value)
+                if (parsed !== null) {
+                  setLatDecimal(parsed)
+                } else {
+                  setLatDecimal(value === '' ? '' : value as any)
+                }
+              }}
+              placeholder="-13.1635 o 13°09'27&quot;S"
             />
+            {lat && latDecimal !== '' && typeof latDecimal === 'number' && (
+              <p className="text-xs text-green-600 mt-1">✓ {latDecimal.toFixed(6)}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Longitud</label>
             <input
-              type="number"
-              step="0.000001"
+              type="text"
               className="w-full border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={lng}
-              onChange={(e) => setLng(e.target.value === '' ? '' : Number(e.target.value))}
-              placeholder="-74.2243"
+              onChange={(e) => {
+                const value = e.target.value
+                setLng(value)
+                const parsed = parseCoordinate(value)
+                if (parsed !== null) {
+                  setLngDecimal(parsed)
+                } else {
+                  setLngDecimal(value === '' ? '' : value as any)
+                }
+              }}
+              placeholder="-74.2243 o 74°12'59&quot;W"
             />
+            {lng && lngDecimal !== '' && typeof lngDecimal === 'number' && (
+              <p className="text-xs text-green-600 mt-1">✓ {lngDecimal.toFixed(6)}</p>
+            )}
           </div>
         </div>
+
+        <p className="text-xs text-neutral-500">
+          💡 Acepta formato decimal (-13.1635) o DMS de Google Earth (13°09'27"S)
+        </p>
 
         <button
           type="button"
