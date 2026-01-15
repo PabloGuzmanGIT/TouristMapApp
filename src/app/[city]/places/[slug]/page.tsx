@@ -1,9 +1,10 @@
 // app/[city]/places/[slug]/page.tsx
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Edit, MapPin, Clock, DollarSign, Users, Car, Mountain, Shield, Globe, Phone, Star, ChevronRight, Share2 } from 'lucide-react'
+import { Edit, MapPin, Clock, DollarSign, Users, Car, Mountain, Shield, Globe, Phone, Star, ChevronRight, Share2, MessageSquare } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { checkAuth } from '@/lib/auth'
+import PlaceReviewSection from '@/components/PlaceReviewSection'
 
 // Type for place details
 type PlaceDetails = {
@@ -454,6 +455,9 @@ export default async function PlacePage({
             </div>
           </section>
         )}
+
+        {/* Reviews Section */}
+        <PlaceReviewSection placeId={place.id} placeName={place.name} />
 
         {/* Booking Button */}
         {place.bookingUrl && (
