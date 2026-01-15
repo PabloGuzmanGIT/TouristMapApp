@@ -8,9 +8,11 @@ import { ReviewForm, ReviewList, ReviewSummary } from './reviews'
 interface PlaceReviewSectionProps {
     placeId: string
     placeName: string
+    placeSlug: string
+    citySlug: string
 }
 
-export default function PlaceReviewSection({ placeId, placeName }: PlaceReviewSectionProps) {
+export default function PlaceReviewSection({ placeId, placeName, placeSlug, citySlug }: PlaceReviewSectionProps) {
     const { data: session } = useSession()
     const [showForm, setShowForm] = useState(false)
     const [reviewStats, setReviewStats] = useState<any>(null)
@@ -86,6 +88,8 @@ export default function PlaceReviewSection({ placeId, placeName }: PlaceReviewSe
                     <ReviewForm
                         placeId={placeId}
                         placeName={placeName}
+                        placeSlug={placeSlug}
+                        citySlug={citySlug}
                         onSuccess={handleReviewSuccess}
                         onCancel={() => setShowForm(false)}
                     />
