@@ -91,6 +91,14 @@ export default async function PlacePage({
 
   const place = await prisma.place.findFirst({
     where: { slug, status: 'published', city: { slug: city } },
+    include: {
+      city: {
+        select: {
+          slug: true,
+          name: true
+        }
+      }
+    }
   })
   if (!place) return notFound()
 
