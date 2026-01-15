@@ -1,3 +1,4 @@
+```typescript
 import NextAuth, { DefaultSession } from "next-auth"
 
 declare module "next-auth" {
@@ -5,11 +6,13 @@ declare module "next-auth" {
         user: {
             id: string
             role: string
+            managedCityId?: string | null
         } & DefaultSession["user"]
     }
 
     interface User {
         role: string
+        managedCityId?: string | null
     }
 }
 
@@ -17,5 +20,7 @@ declare module "next-auth/jwt" {
     interface JWT {
         id: string
         role: string
+        managedCityId?: string | null
     }
 }
+```

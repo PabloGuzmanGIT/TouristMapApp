@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth-options'
 import { prisma } from '@/lib/prisma'
+import { getModerableReviewsFilter } from '@/lib/review-permissions'
 
 // GET - List reviews for admin (with status filter)
 export async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
 
-        if (!session || session.user.role !== 'admin') {
+        // Allow both admin and editor roles
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
             return NextResponse.json(
                 { error: 'No autorizado' },
                 { status: 403 }
@@ -21,9 +23,20 @@ export async function GET(req: NextRequest) {
         const limit = parseInt(searchParams.get('limit') || '20')
         const skip = (page - 1) * limit
 
-        const where = status === 'all'
+        // Get filter based on user permissions
+        const permissionFilter = getModerableReviewsFilter(
+            session.user.role,
+            session.user.managedCityId
+        )
+
+        const statusFilter = status === 'all'
             ? {}
             : { status: status as 'pending' | 'published' | 'rejected' }
+
+        const where = {
+            ...statusFilter,
+            ...permissionFilter
+        }
 
         const reviews = await prisma.placeReview.findMany({
             where,
@@ -57,11 +70,11 @@ export async function GET(req: NextRequest) {
 
         const total = await prisma.placeReview.count({ where })
 
-        // Get counts by status
+        // Get counts by status (filtered by permission)
         const counts = await Promise.all([
-            prisma.placeReview.count({ where: { status: 'pending' } }),
-            prisma.placeReview.count({ where: { status: 'published' } }),
-            prisma.placeReview.count({ where: { status: 'rejected' } }),
+            prisma.placeReview.count({ where: { ...permissionFilter, status: 'pending' } }),
+            prisma.placeReview.count({ where: { ...permissionFilter, status: 'published' } }),
+            prisma.placeReview.count({ where: { ...permissionFilter, status: 'rejected' } }),
         ])
 
         return NextResponse.json({
@@ -77,7 +90,11 @@ export async function GET(req: NextRequest) {
                 published: counts[1],
                 rejected: counts[2],
                 all: counts[0] + counts[1] + counts[2]
-            }
+            },
+            userRole: session.user.role,
+            managedCity: session.user.managedCityId ? {
+                id: session.user.managedCityId
+            } : null
         })
 
     } catch (error) {

@@ -86,6 +86,7 @@ model City {
 
   areas  Area[]
   places Place[]
+  editors User[] @relation("CityEditors")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -171,6 +172,10 @@ model User {
   password      String? // Hashed password
   image         String?
   role          String    @default("user") // user, admin, editor
+  
+  // For editors: can only manage places/reviews in their assigned city
+  managedCityId String?
+  managedCity   City?    @relation("CityEditors", fields: [managedCityId], references: [id], onDelete: SetNull)
   
   // Password recovery
   resetToken        String?   @unique

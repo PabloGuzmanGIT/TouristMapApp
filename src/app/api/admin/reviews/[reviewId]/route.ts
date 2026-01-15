@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth-options'
 import { prisma } from '@/lib/prisma'
 import { updatePlaceRating } from '@/lib/review-helpers'
+import { canModerateReview } from '@/lib/review-permissions'
 
 // PATCH - Approve/Reject review
 export async function PATCH(
@@ -12,7 +13,8 @@ export async function PATCH(
     try {
         const session = await getServerSession(authOptions)
 
-        if (!session || session.user.role !== 'admin') {
+        // Allow both admin and editor
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
             return NextResponse.json(
                 { error: 'No autorizado' },
                 { status: 403 }
@@ -21,6 +23,21 @@ export async function PATCH(
 
         const { reviewId } = await params
         const { status, content, title } = await req.json()
+
+        // Check if user can moderate this specific review
+        const hasPermission = await canModerateReview(
+            session.user.id,
+            session.user.role,
+            reviewId,
+            session.user.managedCityId
+        )
+
+        if (!hasPermission) {
+            return NextResponse.json(
+                { error: 'No tienes permiso para moderar esta review' },
+                { status: 403 }
+            )
+        }
 
         // Validate status
         if (!['published', 'rejected'].includes(status)) {
@@ -101,7 +118,8 @@ export async function DELETE(
     try {
         const session = await getServerSession(authOptions)
 
-        if (!session || session.user.role !== 'admin') {
+        // Allow both admin and editor
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
             return NextResponse.json(
                 { error: 'No autorizado' },
                 { status: 403 }
@@ -109,6 +127,21 @@ export async function DELETE(
         }
 
         const { reviewId } = await params
+
+        // Check if user can moderate this specific review
+        const hasPermission = await canModerateReview(
+            session.user.id,
+            session.user.role,
+            reviewId,
+            session.user.managedCityId
+        )
+
+        if (!hasPermission) {
+            return NextResponse.json(
+                { error: 'No tienes permiso para eliminar esta review' },
+                { status: 403 }
+            )
+        }
 
         const review = await prisma.placeReview.findUnique({
             where: { id: reviewId }
