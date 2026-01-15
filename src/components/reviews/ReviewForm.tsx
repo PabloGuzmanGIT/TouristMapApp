@@ -169,7 +169,7 @@ export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: 
                     Fotos (máximo 5)
                 </label>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {formData.images.map((url, index) => (
                         <div key={index} className="relative group">
                             <img
@@ -208,11 +208,11 @@ export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: 
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-foreground/10">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 pt-4 border-t border-foreground/10">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 text-foreground/60 hover:text-foreground transition-colors"
+                    className="px-4 py-3 sm:py-2 text-foreground/60 hover:text-foreground transition-colors order-2 sm:order-1"
                     disabled={loading}
                 >
                     Cancelar
@@ -220,7 +220,7 @@ export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: 
                 <button
                     type="submit"
                     disabled={loading || formData.rating === 0}
-                    className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-6 py-3 sm:py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
                 >
                     {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                     {loading ? 'Enviando...' : 'Publicar Review'}

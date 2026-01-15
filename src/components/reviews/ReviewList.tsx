@@ -64,16 +64,16 @@ export default function ReviewList({ placeId, initialReviews = [], onWriteReview
     return (
         <div className="space-y-6">
             {/* Sort Options */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <h3 className="font-semibold text-lg">
                     {reviews.length} review{reviews.length !== 1 && 's'}
                 </h3>
                 <div className="flex items-center gap-2">
-                    <label className="text-sm text-foreground/60">Ordenar por:</label>
+                    <label className="text-sm text-foreground/60 hidden sm:inline">Ordenar por:</label>
                     <select
                         value={sort}
                         onChange={(e) => setSort(e.target.value as 'recent' | 'helpful')}
-                        className="px-3 py-1.5 border border-foreground/20 rounded-lg bg-background text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="w-full sm:w-auto px-3 py-2 sm:py-1.5 border border-foreground/20 rounded-lg bg-background text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
                     >
                         <option value="recent">Más recientes</option>
                         <option value="helpful">Más útiles</option>
@@ -98,19 +98,19 @@ export default function ReviewList({ placeId, initialReviews = [], onWriteReview
                     <button
                         onClick={() => setPage(p => Math.max(1, p - 1))}
                         disabled={page === 1 || loading}
-                        className="p-2 rounded-lg border border-foreground/20 hover:bg-foreground/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="p-2.5 sm:p-2 rounded-lg border border-foreground/20 hover:bg-foreground/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </button>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5 sm:gap-1">
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
                             <button
                                 key={pageNum}
                                 onClick={() => setPage(pageNum)}
                                 disabled={loading}
                                 className={`
-                  w-10 h-10 rounded-lg transition-colors
+                  w-12 h-12 sm:w-10 sm:h-10 rounded-lg transition-colors text-sm sm:text-base
                   ${pageNum === page
                                         ? 'bg-primary text-white'
                                         : 'border border-foreground/20 hover:bg-foreground/5'
@@ -126,7 +126,7 @@ export default function ReviewList({ placeId, initialReviews = [], onWriteReview
                     <button
                         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages || loading}
-                        className="p-2 rounded-lg border border-foreground/20 hover:bg-foreground/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="p-2.5 sm:p-2 rounded-lg border border-foreground/20 hover:bg-foreground/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         <ChevronRight className="w-5 h-5" />
                     </button>

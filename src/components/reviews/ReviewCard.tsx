@@ -65,12 +65,12 @@ export default function ReviewCard({ review, onHelpfulToggle }: ReviewCardProps)
     })
 
     return (
-        <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-6 space-y-4">
+        <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-4 sm:p-6 space-y-4">
             {/* Header */}
-            <div className="flex items-start justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="flex items-center gap-3">
                     {/* Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 flex-shrink-0 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold">
                         {review.user.image ? (
                             <img
                                 src={review.user.image}
@@ -82,13 +82,15 @@ export default function ReviewCard({ review, onHelpfulToggle }: ReviewCardProps)
                         )}
                     </div>
 
-                    <div>
-                        <p className="font-semibold">{review.user.name || 'Usuario'}</p>
+                    <div className="min-w-0 flex-1">
+                        <p className="font-semibold truncate">{review.user.name || 'Usuario'}</p>
                         <p className="text-xs text-foreground/60">{formattedDate}</p>
                     </div>
                 </div>
 
-                <StarRating value={review.rating} readonly size="sm" />
+                <div className="flex sm:block">
+                    <StarRating value={review.rating} readonly size="sm" />
+                </div>
             </div>
 
             {/* Title */}
@@ -101,7 +103,7 @@ export default function ReviewCard({ review, onHelpfulToggle }: ReviewCardProps)
 
             {/* Images */}
             {review.images && review.images.length > 0 && (
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {review.images.map((url, index) => (
                         <img
                             key={index}
@@ -115,12 +117,12 @@ export default function ReviewCard({ review, onHelpfulToggle }: ReviewCardProps)
             )}
 
             {/* Actions */}
-            <div className="flex items-center gap-4 pt-4 border-t border-foreground/10">
+            <div className="flex items-center gap-3 sm:gap-4 pt-4 border-t border-foreground/10">
                 <button
                     onClick={handleHelpfulClick}
                     disabled={loading}
                     className={`
-            flex items-center gap-2 px-3 py-2 rounded-lg transition-colors
+            flex items-center gap-2 px-4 py-2.5 sm:py-2 rounded-lg transition-colors text-sm sm:text-base
             ${isHelpful
                             ? 'bg-primary/10 text-primary'
                             : 'hover:bg-foreground/5 text-foreground/60'
@@ -137,7 +139,8 @@ export default function ReviewCard({ review, onHelpfulToggle }: ReviewCardProps)
                 {review._count && review._count.comments > 0 && (
                     <div className="flex items-center gap-2 text-foreground/60">
                         <MessageCircle className="w-4 h-4" />
-                        <span className="text-sm">{review._count.comments} comentarios</span>
+                        <span className="text-sm hidden sm:inline">{review._count.comments} comentarios</span>
+                        <span className="text-sm sm:hidden">({review._count.comments})</span>
                     </div>
                 )}
             </div>

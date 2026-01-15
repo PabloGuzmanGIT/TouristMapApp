@@ -24,10 +24,10 @@ export default function ReviewSummary({ average, count, distribution }: ReviewSu
 
     return (
         <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-6">
-            <div className="flex items-start gap-8">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
                 {/* Overall Rating */}
-                <div className="text-center">
-                    <div className="text-5xl font-bold mb-2">{roundedAverage}</div>
+                <div className="text-center md:text-left w-full md:w-auto">
+                    <div className="text-4xl md:text-5xl font-bold mb-2">{roundedAverage}</div>
                     <StarRating value={Math.round(average)} readonly size="md" />
                     <p className="text-sm text-foreground/60 mt-2">
                         Basado en {count} review{count !== 1 && 's'}
@@ -36,14 +36,14 @@ export default function ReviewSummary({ average, count, distribution }: ReviewSu
 
                 {/* Distribution */}
                 {distribution && (
-                    <div className="flex-1 space-y-2">
+                    <div className="flex-1 space-y-2 w-full">
                         {[5, 4, 3, 2, 1].map((stars) => {
                             const distCount = distribution[stars as keyof typeof distribution] || 0
                             const percentage = count > 0 ? (distCount / count) * 100 : 0
 
                             return (
                                 <div key={stars} className="flex items-center gap-3">
-                                    <div className="flex items-center gap-1 w-16">
+                                    <div className="flex items-center gap-1 w-14 sm:w-16">
                                         <span className="text-sm font-medium">{stars}</span>
                                         <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                                     </div>
@@ -55,7 +55,7 @@ export default function ReviewSummary({ average, count, distribution }: ReviewSu
                                         />
                                     </div>
 
-                                    <span className="text-sm text-foreground/60 w-12 text-right">
+                                    <span className="text-sm text-foreground/60 w-10 sm:w-12 text-right">
                                         {distCount}
                                     </span>
                                 </div>
