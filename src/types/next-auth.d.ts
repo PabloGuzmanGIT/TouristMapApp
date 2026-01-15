@@ -1,4 +1,3 @@
-```typescript
 import NextAuth, { DefaultSession } from "next-auth"
 
 declare module "next-auth" {
@@ -23,4 +22,3 @@ declare module "next-auth/jwt" {
         managedCityId?: string | null
     }
 }
-```
