@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { X, Upload, Loader2 } from 'lucide-react'
 import StarRating from './StarRating'
 import { CldUploadWidget } from 'next-cloudinary'
+import { toast } from 'sonner'
 
 interface ReviewFormProps {
     placeId: string
@@ -31,12 +32,16 @@ export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: 
         setError('')
 
         if (formData.rating === 0) {
-            setError('Por favor selecciona una calificación')
+            toast.error('Selecciona una calificación', {
+                description: 'Debes elegir entre 1 y 5 estrellas'
+            })
             return
         }
 
         if (formData.content.trim().length < 10) {
-            setError('El contenido debe tener al menos 10 caracteres')
+            toast.error('Contenido muy corto', {
+                description: 'La review debe tener al menos 10 caracteres'
+            })
             return
         }
 
@@ -56,10 +61,16 @@ export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: 
             }
 
             // Success
+            toast.success('¡Review enviada!', {
+                description: 'Será publicada después de ser revisada por un moderador',
+                duration: 5000
+            })
             onSuccess?.()
             router.refresh()
         } catch (err: any) {
-            setError(err.message)
+            toast.error('Error al enviar review', {
+                description: err.message
+            })
             setLoading(false)
         }
     }

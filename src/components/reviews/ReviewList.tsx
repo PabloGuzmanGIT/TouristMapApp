@@ -3,13 +3,18 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ReviewCard from './ReviewCard'
+import ReviewSkeleton from '@/components/ReviewSkeleton'
+import EmptyReviewsState from '@/components/EmptyReviewsState'
+import { useSession } from 'next-auth/react'
 
 interface ReviewListProps {
     placeId: string
     initialReviews?: any[]
+    onWriteReview?: () => void
 }
 
-export default function ReviewList({ placeId, initialReviews = [] }: ReviewListProps) {
+export default function ReviewList({ placeId, initialReviews = [], onWriteReview }: ReviewListProps) {
+    const { data: session } = useSession()
     const [reviews, setReviews] = useState(initialReviews)
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
@@ -44,20 +49,16 @@ export default function ReviewList({ placeId, initialReviews = [] }: ReviewListP
 
     if (loading && reviews.length === 0) {
         return (
-            <div className="text-center py-12">
-                <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <p className="mt-4 text-foreground/60">Cargando reviews...</p>
+            <div className="space-y-4">
+                <ReviewSkeleton />
+                <ReviewSkeleton />
+                <ReviewSkeleton />
             </div>
         )
     }
 
     if (reviews.length === 0) {
-        return (
-            <div className="text-center py-12 bg-background/50 backdrop-blur-md border border-foreground/10 rounded-2xl">
-                <p className="text-foreground/60">Aún no hay reviews para este lugar</p>
-                <p className="text-sm text-foreground/40 mt-2">¡Sé el primero en compartir tu experiencia!</p>
-            </div>
-        )
+        return <EmptyReviewsState onWriteReview={onWriteReview} isAuthenticated={!!session} />
     }
 
     return (

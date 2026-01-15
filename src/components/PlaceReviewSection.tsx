@@ -93,7 +93,11 @@ export default function PlaceReviewSection({ placeId, placeName }: PlaceReviewSe
             )}
 
             {/* Reviews List */}
-            <ReviewList key={refreshKey} placeId={placeId} />
+            <ReviewList
+                key={refreshKey}
+                placeId={placeId}
+                onWriteReview={() => setShowForm(true)}
+            />
         </section>
     )
 }

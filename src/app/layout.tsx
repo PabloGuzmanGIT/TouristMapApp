@@ -5,6 +5,7 @@ import "./globals.css";
 import 'maplibre-gl/dist/maplibre-gl.css';
 import Navbar from "@/components/Navbar";
 import { SessionProvider } from "@/components/SessionProvider";
+import { Toaster } from 'sonner';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -30,6 +31,12 @@ export default function RootLayout({
         <SessionProvider>
           <Navbar />
           {children}
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            duration={4000}
+          />
         </SessionProvider>
       </body>
     </html>

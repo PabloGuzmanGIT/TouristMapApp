@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { CheckCircle, XCircle, Trash2, Eye, Star, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import ConfirmModal from '@/components/ConfirmModal'
 
 interface Review {
     id: string
@@ -35,6 +37,13 @@ export default function AdminReviewsPage() {
     const [loading, setLoading] = useState(true)
     const [status, setStatus] = useState<'pending' | 'published' | 'rejected' | 'all'>('pending')
     const [counts, setCounts] = useState({ pending: 0, published: 0, rejected: 0, all: 0 })
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean
+        action?: () => void
+        title?: string
+        description?: string
+        variant?: 'danger' | 'warning'
+    }>({ isOpen: false })
 
     useEffect(() => {
         fetchReviews()
@@ -50,64 +59,74 @@ export default function AdminReviewsPage() {
                 setReviews(data.reviews)
                 setCounts(data.counts)
             } else {
-                alert(data.error || 'Error al cargar reviews')
+                toast.error(data.error || 'Error al cargar reviews')
             }
         } catch (error) {
             console.error('Error:', error)
-            alert('Error de conexión')
+            toast.error('Error de conexión al cargar reviews')
         } finally {
             setLoading(false)
         }
     }
 
     async function handleModerate(reviewId: string, newStatus: 'published' | 'rejected') {
-        if (!confirm(`¿Seguro que quieres ${newStatus === 'published' ? 'aprobar' : 'rechazar'} esta review?`)) {
-            return
-        }
+        const actionText = newStatus === 'published' ? 'aprobar' : 'rechazar'
 
-        try {
-            const res = await fetch(`/api/admin/reviews/${reviewId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
-            })
+        setConfirmModal({
+            isOpen: true,
+            title: `¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} review?`,
+            description: `Esta acción cambiará el estado de la review a ${newStatus === 'published' ? 'publicada' : 'rechazada'}.`,
+            variant: newStatus === 'rejected' ? 'danger' : 'warning',
+            action: async () => {
+                try {
+                    const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    })
 
-            const data = await res.json()
+                    const data = await res.json()
 
-            if (res.ok) {
-                alert(data.message)
-                fetchReviews()
-            } else {
-                alert(data.error || 'Error al moderar')
+                    if (res.ok) {
+                        toast.success(data.message)
+                        fetchReviews()
+                    } else {
+                        toast.error(data.error || 'Error al moderar')
+                    }
+                } catch (error) {
+                    console.error('Error:', error)
+                    toast.error('Error de conexión')
+                }
             }
-        } catch (error) {
-            console.error('Error:', error)
-            alert('Error de conexión')
-        }
+        })
     }
 
     async function handleDelete(reviewId: string) {
-        if (!confirm('¿Seguro que quieres ELIMINAR permanentemente esta review?')) {
-            return
-        }
+        setConfirmModal({
+            isOpen: true,
+            title: '¿Eliminar review permanentemente?',
+            description: 'Esta acción no se puede deshacer. La review será eliminada para siempre.',
+            variant: 'danger',
+            action: async () => {
+                try {
+                    const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+                        method: 'DELETE'
+                    })
 
-        try {
-            const res = await fetch(`/api/admin/reviews/${reviewId}`, {
-                method: 'DELETE'
-            })
+                    const data = await res.json()
 
-            const data = await res.json()
-
-            if (res.ok) {
-                alert(data.message)
-                fetchReviews()
-            } else {
-                alert(data.error || 'Error al eliminar')
+                    if (res.ok) {
+                        toast.success(data.message)
+                        fetchReviews()
+                    } else {
+                        toast.error(data.error || 'Error al eliminar')
+                    }
+                } catch (error) {
+                    console.error('Error:', error)
+                    toast.error('Error de conexión')
+                }
             }
-        } catch (error) {
-            console.error('Error:', error)
-            alert('Error de conexión')
-        }
+        })
     }
 
     return (
@@ -215,8 +234,8 @@ export default function AdminReviewsPage() {
                                         <Star
                                             key={star}
                                             className={`w-5 h-5 ${star <= review.rating
-                                                    ? 'fill-yellow-400 text-yellow-400'
-                                                    : 'fill-transparent text-gray-300'
+                                                ? 'fill-yellow-400 text-yellow-400'
+                                                : 'fill-transparent text-gray-300'
                                                 }`}
                                         />
                                     ))}
@@ -300,6 +319,17 @@ export default function AdminReviewsPage() {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal({ isOpen: false })}
+                onConfirm={() => confirmModal.action?.()}
+                title={confirmModal.title || ''}
+                description={confirmModal.description || ''}
+                variant={confirmModal.variant}
+                confirmText="Confirmar"
+                cancelText="Cancelar"
+            />
         </div>
     )
 }
