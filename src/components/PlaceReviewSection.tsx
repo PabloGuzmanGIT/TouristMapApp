@@ -45,19 +45,19 @@ export default function PlaceReviewSection({ placeId, placeName }: PlaceReviewSe
     return (
         <section className="space-y-6">
             {/* Section Header */}
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                    <MessageSquare className="w-6 h-6 text-primary" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                     Reviews {reviewStats && `(${reviewStats.count})`}
                 </h2>
 
                 {!showForm && (
                     <button
                         onClick={() => setShowForm(true)}
-                        className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+                        className="w-full sm:w-auto px-4 py-3 sm:py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                     >
                         <span>✍️</span>
-                        <span className="hidden sm:inline">Escribir Review</span>
+                        <span>Escribir Review</span>
                     </button>
                 )}
             </div>
