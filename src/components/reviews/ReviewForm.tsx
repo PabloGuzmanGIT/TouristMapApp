@@ -7,15 +7,18 @@ import { X, Upload, Loader2 } from 'lucide-react'
 import StarRating from './StarRating'
 import { CldUploadWidget } from 'next-cloudinary'
 import { toast } from 'sonner'
+import ShareModal from '@/components/ShareModal'
 
 interface ReviewFormProps {
     placeId: string
     placeName: string
+    placeSlug?: string
+    citySlug?: string
     onSuccess?: () => void
     onCancel?: () => void
 }
 
-export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: ReviewFormProps) {
+export default function ReviewForm({ placeId, placeName, placeSlug, citySlug, onSuccess, onCancel }: ReviewFormProps) {
     const router = useRouter()
     const { data: session } = useSession()
     const [formData, setFormData] = useState({
@@ -26,6 +29,8 @@ export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: 
     })
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [shareModalOpen, setShareModalOpen] = useState(false)
+    const [reviewToShare, setReviewToShare] = useState<any>(null)
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
@@ -60,11 +65,22 @@ export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: 
                 throw new Error(data.error || 'Error al enviar review')
             }
 
-            // Success
-            toast.success('¡Review enviada!', {
-                description: 'Será publicada después de ser revisada por un moderador',
-                duration: 5000
+            // Success - Show ShareModal
+            setReviewToShare({
+                id: data.review.id,
+                rating: formData.rating,
+                title: formData.title,
+                content: formData.content,
+                place: {
+                    name: placeName,
+                    slug: placeSlug || '',
+                    city: {
+                        name: data.review.place?.city?.name || '',
+                        slug: citySlug || data.review.place?.city?.slug || ''
+                    }
+                }
             })
+            setShareModalOpen(true)
             onSuccess?.()
             router.refresh()
         } catch (err: any) {
@@ -230,6 +246,18 @@ export default function ReviewForm({ placeId, placeName, onSuccess, onCancel }: 
             <p className="text-xs text-foreground/60 text-center">
                 Tu review será revisada antes de publicarse
             </p>
+
+            {/* Share Modal */}
+            {reviewToShare && (
+                <ShareModal
+                    isOpen={shareModalOpen}
+                    onClose={() => {
+                        setShareModalOpen(false)
+                        setReviewToShare(null)
+                    }}
+                    review={reviewToShare}
+                />
+            )}
         </form>
     )
 }
