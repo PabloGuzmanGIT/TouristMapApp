@@ -4,6 +4,7 @@ import "./globals.css";
 // @ts-ignore — CSS side-effect import (no types)
 import 'maplibre-gl/dist/maplibre-gl.css';
 import Navbar from "@/components/Navbar";
+import { SessionProvider } from "@/components/SessionProvider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -26,8 +27,10 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <Navbar />
-        {children}
+        <SessionProvider>
+          <Navbar />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
