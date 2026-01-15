@@ -457,7 +457,12 @@ export default async function PlacePage({
         )}
 
         {/* Reviews Section */}
-        <PlaceReviewSection placeId={place.id} placeName={place.name} />
+        <PlaceReviewSection
+          placeId={place.id}
+          placeName={place.name}
+          placeSlug={place.slug}
+          citySlug={place.city.slug}
+        />
 
         {/* Booking Button */}
         {place.bookingUrl && (
