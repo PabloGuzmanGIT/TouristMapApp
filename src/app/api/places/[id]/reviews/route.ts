@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 // POST - Create a review
 export async function POST(
     req: NextRequest,
-    { params }: { params: Promise<{ placeId: string }> }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions)
@@ -18,7 +18,7 @@ export async function POST(
             )
         }
 
-        const { placeId } = await params
+        const { id: placeId } = await params
         const { rating, title, content, images } = await req.json()
 
         // Validations
@@ -112,10 +112,10 @@ export async function POST(
 // GET - List reviews for a place
 export async function GET(
     req: NextRequest,
-    { params }: { params: Promise<{ placeId: string }> }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { placeId } = await params
+        const { id: placeId } = await params
         const { searchParams } = new URL(req.url)
 
         const sort = searchParams.get('sort') || 'recent' // recent | helpful
