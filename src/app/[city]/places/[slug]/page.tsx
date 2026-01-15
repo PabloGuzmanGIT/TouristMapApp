@@ -142,14 +142,14 @@ export default async function PlacePage({
                 id: place.id,
                 name: place.name,
                 slug: place.slug,
-                description: place.description,
-                mainImage: place.mainImage,
+                description: (place as any).description || null,
+                mainImage: (place as any).mainImage || null,
                 city: {
                   name: place.city.name,
                   slug: place.city.slug
                 },
                 category: place.category,
-                rating: place.ratingAverage
+                rating: place.ratingAvg || undefined
               }}
             />
             {isAdmin && (
