@@ -76,14 +76,24 @@ export default function Navbar() {
                                                 </Link>
 
                                                 {isAdmin && (
-                                                    <Link
-                                                        href="/admin/places"
-                                                        className="flex items-center gap-2 px-4 py-2 hover:bg-foreground/5 transition-colors"
-                                                        onClick={() => setProfileDropdownOpen(false)}
-                                                    >
-                                                        <Shield className="w-4 h-4" />
-                                                        Panel Admin
-                                                    </Link>
+                                                    <>
+                                                        <Link
+                                                            href="/admin/reviews"
+                                                            className="flex items-center gap-2 px-4 py-2 hover:bg-foreground/5 transition-colors"
+                                                            onClick={() => setProfileDropdownOpen(false)}
+                                                        >
+                                                            <MessageSquare className="w-4 h-4" />
+                                                            Moderar Reviews
+                                                        </Link>
+                                                        <Link
+                                                            href="/admin/places"
+                                                            className="flex items-center gap-2 px-4 py-2 hover:bg-foreground/5 transition-colors"
+                                                            onClick={() => setProfileDropdownOpen(false)}
+                                                        >
+                                                            <Shield className="w-4 h-4" />
+                                                            Panel Admin
+                                                        </Link>
+                                                    </>
                                                 )}
 
                                                 <button
@@ -167,13 +177,22 @@ export default function Navbar() {
                                 </Link>
 
                                 {isAdmin && (
-                                    <Link
-                                        href="/admin/places"
-                                        className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors"
-                                    >
-                                        <Shield className="w-4 h-4" />
-                                        Panel Admin
-                                    </Link>
+                                    <>
+                                        <Link
+                                            href="/admin/reviews"
+                                            className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors"
+                                        >
+                                            <MessageSquare className="w-4 h-4" />
+                                            Moderar Reviews
+                                        </Link>
+                                        <Link
+                                            href="/admin/places"
+                                            className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors"
+                                        >
+                                            <Shield className="w-4 h-4" />
+                                            Panel Admin
+                                        </Link>
+                                    </>
                                 )}
 
                                 <Link
