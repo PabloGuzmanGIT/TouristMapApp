@@ -5,6 +5,7 @@ import { Edit, MapPin, Clock, DollarSign, Users, Car, Mountain, Shield, Globe, P
 import { prisma } from '@/lib/prisma'
 import { checkAuth } from '@/lib/auth'
 import PlaceReviewSection from '@/components/PlaceReviewSection'
+import PlaceShareButton from '@/components/PlaceShareButton'
 
 // Type for place details
 type PlaceDetails = {
@@ -136,9 +137,21 @@ export default async function PlacePage({
           </Link>
 
           <div className="flex gap-2">
-            <button className="p-2 bg-background/80 backdrop-blur-sm rounded-lg hover:bg-background transition-colors">
-              <Share2 className="w-5 h-5" />
-            </button>
+            <PlaceShareButton
+              place={{
+                id: place.id,
+                name: place.name,
+                slug: place.slug,
+                description: place.description,
+                mainImage: place.mainImage,
+                city: {
+                  name: place.city.name,
+                  slug: place.city.slug
+                },
+                category: place.category,
+                rating: place.ratingAverage
+              }}
+            />
             {isAdmin && (
               <Link
                 href={`/admin/places/${place.id}/edit`}
