@@ -6,10 +6,10 @@ export const runtime = 'edge'
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: Promise<{ placeId: string }> }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { placeId } = await params
+        const { id } = await params
 
         // For MVP, return a simple placeholder image
         // In production, fetch place data and generate custom image
