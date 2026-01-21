@@ -44,9 +44,9 @@ export default function HeroVisual({ onToggleMap, onLocateMe, placeCount }: Hero
                 </h1>
 
                 {/* Subtitle */}
-                <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed animate-in slide-in-from-bottom-6 duration-1000 delay-300">
+                <div className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed animate-in slide-in-from-bottom-6 duration-1000 delay-300">
                     Explora tesoros escondidos, gastronomía y cultura. <br className="hidden sm:block" /> Tu próxima aventura comienza aquí.
-                </p>
+                </div>
 
                 {/* Floating Search Bar (The "Island") */}
                 <div className="w-full max-w-2xl mx-auto mt-8 animate-in slide-in-from-bottom-8 duration-1000 delay-500 relative z-20">
