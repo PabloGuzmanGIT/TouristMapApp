@@ -49,7 +49,7 @@ export default function HeroVisual({ onToggleMap, onLocateMe, placeCount }: Hero
                 </p>
 
                 {/* Floating Search Bar (The "Island") */}
-                <div className="w-full max-w-2xl mx-auto mt-8 animate-in slide-in-from-bottom-8 duration-1000 delay-500">
+                <div className="w-full max-w-2xl mx-auto mt-8 animate-in slide-in-from-bottom-8 duration-1000 delay-500 relative z-20">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-white/20 blur-xl rounded-full transition-all group-hover:bg-white/30" />
                         <div className="relative flex items-center bg-white/90 backdrop-blur-xl border border-white/40 rounded-full p-2 shadow-2xl transition-transform hover:scale-[1.02]">
@@ -57,7 +57,7 @@ export default function HeroVisual({ onToggleMap, onLocateMe, placeCount }: Hero
                             <input
                                 type="text"
                                 placeholder="¿A dónde quieres ir? (ej. Cusco, Cebiche...)"
-                                className="flex-1 bg-transparent border-none focus:ring-0 text-lg px-4 text-neutral-800 placeholder:text-neutral-500 h-12"
+                                className="flex-1 bg-transparent border-none focus:ring-0 text-lg px-4 text-neutral-800 placeholder:text-neutral-500 h-12 outline-none"
                             />
                             <button className="bg-primary hover:bg-primary/90 text-white p-3 rounded-full transition-colors shadow-lg">
                                 <Search className="w-6 h-6" />
@@ -66,23 +66,12 @@ export default function HeroVisual({ onToggleMap, onLocateMe, placeCount }: Hero
                     </div>
                 </div>
 
-                {/* Bottom Actions */}
-                <div className="absolute bottom-[-100px] md:bottom-[-150px] w-full left-0 flex justify-between px-4 sm:px-12 items-end pointer-events-none">
-                    {/* Geolocation Button */}
-                    <button
-                        onClick={onLocateMe}
-                        className="pointer-events-auto group bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-full flex items-center gap-3 transition-all hover:scale-105"
-                    >
-                        <div className="bg-green-500/80 p-2 rounded-full group-hover:animate-pulse">
-                            <Navigation className="w-5 h-5" />
-                        </div>
-                        <span className="font-medium">Cerca de mí</span>
-                    </button>
-
-                    {/* Map Toggle Button */}
+                {/* Bottom Actions - Now relative with margin to prevent overlap */}
+                <div className="w-full flex justify-center gap-4 pt-12 pb-20 animate-in slide-in-from-bottom-10 duration-1000 delay-700 pointer-events-auto">
+                    {/* Map Toggle Button (Primary Action) */}
                     <button
                         onClick={onToggleMap}
-                        className="pointer-events-auto bg-white text-neutral-900 hover:bg-neutral-100 px-8 py-4 rounded-full font-bold text-lg shadow-xl shadow-black/20 flex items-center gap-3 transition-all hover:scale-105 hover:-translate-y-1"
+                        className="bg-white text-neutral-900 hover:bg-neutral-100 px-8 py-4 rounded-full font-bold text-lg shadow-xl shadow-black/20 flex items-center gap-3 transition-all hover:scale-105 hover:-translate-y-1"
                     >
                         <MapIcon className="w-6 h-6" />
                         <span>Ver Mapa</span>

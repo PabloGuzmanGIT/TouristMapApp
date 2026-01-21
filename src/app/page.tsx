@@ -5,6 +5,7 @@ import { MapPin, TrendingUp, Sparkles, Plus, ChevronRight } from 'lucide-react'
 import Stats from '@/components/Stats'
 import { prisma } from '@/lib/prisma'
 import Hero from '@/components/home/Hero'
+import BentoGrid from '@/components/home/BentoGrid'
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -81,49 +82,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured Places */}
-      {featuredPlaces.length > 0 && (
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-black/50">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex items-center gap-2 mb-8">
-              <TrendingUp className="w-8 h-8 text-primary" />
-              <h2 className="text-3xl font-bold">Lugares Destacados</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-              {featuredPlaces.map((place) => (
-                <Link
-                  key={place.id}
-                  href={`/${place.city.slug}/places/${place.slug}`}
-                  className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl overflow-hidden hover:shadow-xl transition-all group"
-                >
-                  {place.images && Array.isArray(place.images) && (place.images as string[])[0] && (
-                    <div className="relative h-40 bg-neutral-200 dark:bg-neutral-800">
-                      <img
-                        src={(place.images as string[])[0]}
-                        alt={place.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    </div>
-                  )}
-                  <div className="p-4 space-y-2">
-                    <h3 className="font-bold text-lg line-clamp-2">{place.name}</h3>
-                    <p className="text-sm text-neutral-500 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {place.city.name}
-                    </p>
-                    {place.short && (
-                      <p className="text-sm text-foreground/70 line-clamp-2">
-                        {place.short}
-                      </p>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Featured Places (Bento Grid) */}
+      <BentoGrid places={featuredPlaces} />
 
       {/* Categories */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
