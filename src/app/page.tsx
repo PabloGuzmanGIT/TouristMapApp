@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, TrendingUp, Sparkles, Plus, ChevronRight } from 'lucide-react'
-import SearchBar from '@/components/SearchBar'
+// SearchBar removed from here as it's now inside HeroVisual
 import Stats from '@/components/Stats'
 import { prisma } from '@/lib/prisma'
+import Hero from '@/components/home/Hero'
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -33,6 +34,7 @@ async function getHomeData() {
 export default async function HomePage() {
   const { placesCount, departmentsCount, featuredPlaces, allDepartments } = await getHomeData()
 
+  // Categories definition kept same...
   const categories = [
     { icon: '🍽️', name: 'Gastronomía', slug: 'restaurant', count: 45 },
     { icon: '🏛️', name: 'Historia', slug: 'historico', count: 67 },
@@ -46,33 +48,8 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 blur-3xl" />
-
-        <div className="relative mx-auto max-w-7xl text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-            <Sparkles className="w-4 h-4" />
-            <span>Descubre {placesCount.toLocaleString()} lugares increíbles</span>
-          </div>
-
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-              Descubre lo mejor
-            </span>
-            <br />
-            <span className="text-foreground">del Perú</span>
-          </h1>
-
-          <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-            Explora lugares turísticos, gastronómicos, históricos y naturales en los 24 departamentos del Perú.
-          </p>
-
-          <div className="pt-4">
-            <SearchBar large />
-          </div>
-        </div>
-      </section>
+      {/* New Hybrid Hero Section */}
+      <Hero placeCount={placesCount} />
 
       {/* Featured Departments */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
