@@ -89,8 +89,6 @@ export default function HighlightsInline({
 
               <Link
                 href={`/${citySlug}/places/${p.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
               >
                 Detalles <ExternalLink className="w-3 h-3" />

@@ -44,7 +44,7 @@ export default function BentoGrid({ places }: BentoGridProps) {
                         </p>
                     </div>
                     <Link
-                        href="/explorar"
+                        href="/#regiones"
                         className="hidden md:flex items-center gap-2 text-primary font-medium hover:underline group"
                     >
                         Ver todos <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -94,7 +94,7 @@ export default function BentoGrid({ places }: BentoGridProps) {
 
                 {/* Mobile Button Fallback */}
                 <div className="md:hidden mt-4 text-center">
-                    <Link href="/explorar" className="inline-flex items-center gap-2 text-primary font-medium">
+                    <Link href="/#regiones" className="inline-flex items-center gap-2 text-primary font-medium">
                         Ver todos los destinos <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>

@@ -1,16 +1,15 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import { MapPin, TrendingUp, Sparkles, Plus, ChevronRight } from 'lucide-react'
-// SearchBar removed from here as it's now inside HeroVisual
+import { Sparkles, Plus, ChevronRight } from 'lucide-react'
 import Stats from '@/components/Stats'
 import { prisma } from '@/lib/prisma'
 import Hero from '@/components/home/Hero'
 import BentoGrid from '@/components/home/BentoGrid'
+import RegionsGrid from '@/components/home/RegionsGrid'
 
 export const revalidate = 3600 // Revalidate every hour
 
 async function getHomeData() {
-  const [placesCount, departmentsCount, featuredPlaces, allDepartments] = await Promise.all([
+  const [placesCount, departmentsCount, featuredPlaces, allDepartments, categoryCounts] = await Promise.all([
     prisma.place.count({ where: { status: 'published' } }),
     prisma.city.count(),
     prisma.place.findMany({
@@ -26,61 +25,45 @@ async function getHomeData() {
         _count: { select: { places: true } }
       },
       orderBy: { name: 'asc' }
+    }),
+    prisma.place.groupBy({
+      by: ['category'],
+      where: { status: 'published' },
+      _count: { _all: true }
     })
   ])
 
-  return { placesCount, departmentsCount, featuredPlaces, allDepartments }
+  return { placesCount, departmentsCount, featuredPlaces, allDepartments, categoryCounts }
+}
+
+// Category metadata (icon + display name)
+const CATEGORY_META: Record<string, { icon: string; name: string }> = {
+  restaurant: { icon: '🍽️', name: 'Gastronomía' },
+  historico: { icon: '🏛️', name: 'Historia' },
+  naturaleza: { icon: '🌿', name: 'Naturaleza' },
+  mirador: { icon: '🏔️', name: 'Aventura' },
+  museo: { icon: '🎭', name: 'Cultura' },
+  iglesia: { icon: '⛪', name: 'Religioso' },
+  tienda: { icon: '🛍️', name: 'Compras' },
+  alojamiento: { icon: '🏨', name: 'Alojamiento' },
 }
 
 export default async function HomePage() {
-  const { placesCount, departmentsCount, featuredPlaces, allDepartments } = await getHomeData()
+  const { placesCount, departmentsCount, featuredPlaces, allDepartments, categoryCounts } = await getHomeData()
 
-  // Categories definition kept same...
-  const categories = [
-    { icon: '🍽️', name: 'Gastronomía', slug: 'restaurant', count: 45 },
-    { icon: '🏛️', name: 'Historia', slug: 'historico', count: 67 },
-    { icon: '🌿', name: 'Naturaleza', slug: 'naturaleza', count: 89 },
-    { icon: '🏔️', name: 'Aventura', slug: 'mirador', count: 34 },
-    { icon: '🎭', name: 'Cultura', slug: 'museo', count: 28 },
-    { icon: '⛪', name: 'Religioso', slug: 'iglesia', count: 52 },
-    { icon: '🛍️', name: 'Compras', slug: 'tienda', count: 41 },
-    { icon: '🏨', name: 'Alojamiento', slug: 'alojamiento', count: 23 },
-  ]
+  // Build categories with real counts
+  const categories = Object.entries(CATEGORY_META).map(([slug, meta]) => {
+    const found = categoryCounts.find(c => c.category === slug)
+    return { slug, ...meta, count: found?._count._all ?? 0 }
+  }).filter(c => c.count > 0) // Only show categories that have places
 
   return (
     <div className="min-h-screen bg-background">
       {/* New Hybrid Hero Section */}
       <Hero placeCount={placesCount} />
 
-      {/* Featured Departments */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Departamentos Destacados</h2>
-            <Link href="/explorar" className="text-primary hover:text-primary/80 flex items-center gap-1">
-              Ver todos <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {allDepartments.slice(0, 12).map((dept) => (
-              <Link
-                key={dept.slug}
-                href={`/${dept.slug}`}
-                className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-6 hover:shadow-xl transition-all group"
-              >
-                <div className="text-center space-y-2">
-                  <div className="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
-                    {dept.name.charAt(0)}
-                  </div>
-                  <h3 className="font-semibold">{dept.name}</h3>
-                  <p className="text-sm text-foreground/60">{dept._count.places} lugares</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Regions / Departments - Collapsible */}
+      <RegionsGrid departments={allDepartments} />
 
       {/* Featured Places (Bento Grid) */}
       <BentoGrid places={featuredPlaces} />
@@ -99,7 +82,7 @@ export default async function HomePage() {
               >
                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{cat.icon}</div>
                 <h3 className="font-bold text-lg mb-2">{cat.name}</h3>
-                <p className="text-sm text-foreground/60">{cat.count} lugares</p>
+                <p className="text-sm text-foreground/60">{cat.count} {cat.count === 1 ? 'lugar' : 'lugares'}</p>
               </Link>
             ))}
           </div>
@@ -139,59 +122,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-neutral-900 text-neutral-300 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <MapPin className="w-6 h-6 text-primary" />
-                <span className="text-xl font-bold text-white">Explora Perú</span>
-              </div>
-              <p className="text-sm">
-                Descubre lo mejor del Perú: turismo, gastronomía, historia y naturaleza.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-white mb-4">Explorar</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/" className="hover:text-white">Inicio</Link></li>
-                <li><Link href="/explorar" className="hover:text-white">Departamentos</Link></li>
-                <li><Link href="/add-place" className="hover:text-white">Agregar Lugar</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-white mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/terminos" className="hover:text-white">Términos de Uso</Link></li>
-                <li><Link href="/privacidad" className="hover:text-white">Privacidad</Link></li>
-                <li><Link href="/contacto" className="hover:text-white">Contacto</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-white mb-4">Síguenos</h4>
-              <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center">
-                  FB
-                </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center">
-                  IG
-                </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center">
-                  TW
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-neutral-800 pt-8 text-center text-sm">
-            <p>© 2025 Explora Perú. Todos los derechos reservados.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

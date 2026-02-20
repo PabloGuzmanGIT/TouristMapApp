@@ -114,7 +114,7 @@ export default async function PlacePage({
       {/* Hero Section with Images */}
       <div className="relative">
         {images.length > 0 ? (
-          <div className="relative h-64 md:h-96">
+          <div className="relative h-72 sm:h-80 md:h-96">
             <img
               src={images[0]}
               alt={place.name}
@@ -174,7 +174,7 @@ export default async function PlacePage({
               <h1 className="text-2xl md:text-3xl font-bold">{place.name}</h1>
               <p className="text-foreground/60 flex items-center gap-2 mt-1">
                 <MapPin className="w-4 h-4" />
-                {city.charAt(0).toUpperCase() + city.slice(1)}
+                {place.city.name}
                 {details.altitude?.meters && (
                   <span className="text-sm">• {details.altitude.meters} msnm</span>
                 )}

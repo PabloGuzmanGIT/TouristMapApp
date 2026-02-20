@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, Map as MapIcon, Navigation } from 'lucide-react'
+import { Map as MapIcon, Navigation } from 'lucide-react'
 import Image from 'next/image'
 
 interface HeroVisualProps {
@@ -48,26 +48,8 @@ export default function HeroVisual({ onToggleMap, onLocateMe, placeCount }: Hero
                     Explora tesoros escondidos, gastronomía y cultura. <br className="hidden sm:block" /> Tu próxima aventura comienza aquí.
                 </div>
 
-                {/* Floating Search Bar (The "Island") */}
-                <div className="w-full max-w-2xl mx-auto mt-8 animate-in slide-in-from-bottom-8 duration-1000 delay-500 relative z-20">
-                    <div className="relative group">
-                        <div className="absolute inset-0 bg-white/20 blur-xl rounded-full transition-all group-hover:bg-white/30" />
-                        <div className="relative flex items-center bg-white/90 backdrop-blur-xl border border-white/40 rounded-full p-2 shadow-2xl transition-transform hover:scale-[1.02]">
-                            <Search className="w-6 h-6 text-neutral-500 ml-4" />
-                            <input
-                                type="text"
-                                placeholder="¿A dónde quieres ir? (ej. Cusco, Cebiche...)"
-                                className="flex-1 bg-transparent border-none focus:ring-0 text-lg px-4 text-neutral-800 placeholder:text-neutral-500 h-12 outline-none"
-                            />
-                            <button className="bg-primary hover:bg-primary/90 text-white p-3 rounded-full transition-colors shadow-lg">
-                                <Search className="w-6 h-6" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Bottom Actions - Now relative with margin to prevent overlap */}
-                <div className="w-full flex justify-center gap-4 pt-12 pb-20 animate-in slide-in-from-bottom-10 duration-1000 delay-700 pointer-events-auto">
+                {/* Bottom Actions */}
+                <div className="w-full flex justify-center gap-4 pt-16 pb-20 animate-in slide-in-from-bottom-10 duration-1000 delay-500 pointer-events-auto">
                     {/* Map Toggle Button (Primary Action) */}
                     <button
                         onClick={onToggleMap}

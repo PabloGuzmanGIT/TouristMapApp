@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar, Info, ShoppingBag, MapPin } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import DynamicCityMap from '@/components/DynamicCityMap'
 import HighlightsInline from '@/components/HighlightsInline'
 import { getCitySlogan } from '@/lib/city-slogans'
@@ -76,38 +76,6 @@ export default function CityClientPage({ cityData }: CityClientPageProps) {
                     />
                 </section>
 
-                {/* Info Cards Grid */}
-                <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 space-y-4 bg-gradient-to-br from-background to-primary/5">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                            <Calendar className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-xl font-semibold">Agenda Cultural</h3>
-                        <p className="text-foreground/70">
-                            Eventos diarios, festividades religiosas y actividades culturales que no te puedes perder.
-                        </p>
-                    </div>
-
-                    <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 space-y-4 bg-gradient-to-br from-background to-secondary/5">
-                        <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
-                            <Info className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-xl font-semibold">Servicios Esenciales</h3>
-                        <p className="text-foreground/70">
-                            Ubicación de hospitales, comisarías, bancos y transporte para tu seguridad.
-                        </p>
-                    </div>
-
-                    <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 space-y-4 bg-gradient-to-br from-background to-accent/5">
-                        <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent">
-                            <ShoppingBag className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-xl font-semibold">Comercio e Historia</h3>
-                        <p className="text-foreground/70">
-                            Las mejores tiendas de artesanía, mercados locales y sitios históricos emblemáticos.
-                        </p>
-                    </div>
-                </section>
             </div>
         </main>
     )

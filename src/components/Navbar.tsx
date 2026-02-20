@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
-import { Search, MapPin, Plus, Menu, X, User, LogOut, Shield, MessageSquare } from 'lucide-react'
+import { MapPin, Plus, Menu, X, User, LogOut, Shield, MessageSquare, Home, Compass, Heart } from 'lucide-react'
 
 export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -30,8 +30,11 @@ export default function Navbar() {
                         <Link href="/" className="text-foreground/80 hover:text-primary transition-colors">
                             Inicio
                         </Link>
-                        <Link href="/explorar" className="text-foreground/80 hover:text-primary transition-colors">
+                        <Link href="/#regiones" className="text-foreground/80 hover:text-primary transition-colors">
                             Explorar
+                        </Link>
+                        <Link href="/nosotros" className="text-foreground/80 hover:text-primary transition-colors">
+                            Quiénes Somos
                         </Link>
 
                         {isAuthenticated ? (
@@ -154,23 +157,36 @@ export default function Navbar() {
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
                     <div className="md:hidden py-4 space-y-3 border-t border-foreground/10">
-                        <Link href="/" className="block text-foreground/80 hover:text-primary transition-colors">
+                        <Link href="/" className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5">
+                            <Home className="w-4 h-4" />
                             Inicio
                         </Link>
-                        <Link href="/explorar" className="block text-foreground/80 hover:text-primary transition-colors">
+                        <Link href="/#regiones" className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5">
+                            <Compass className="w-4 h-4" />
                             Explorar
+                        </Link>
+                        <Link href="/nosotros" className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5">
+                            <Heart className="w-4 h-4" />
+                            Quiénes Somos
                         </Link>
 
                         {isAuthenticated ? (
                             <>
-                                <div className="border-t border-foreground/10 pt-3 mt-3">
-                                    <p className="text-sm font-semibold mb-2">{session.user?.name}</p>
-                                    <p className="text-xs text-foreground/60 mb-3">{session.user?.email}</p>
+                                <div className="border-t border-foreground/10 pt-3 mt-1">
+                                    <div className="flex items-center gap-3 px-2 py-2">
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-sm">
+                                            {session.user?.name?.[0]?.toUpperCase() || 'U'}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold">{session.user?.name}</p>
+                                            <p className="text-xs text-foreground/50">{session.user?.email}</p>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <Link
                                     href="/mis-reviews"
-                                    className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors"
+                                    className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5"
                                 >
                                     <MessageSquare className="w-4 h-4" />
                                     Mis Reviews
@@ -178,16 +194,19 @@ export default function Navbar() {
 
                                 {isAdmin && (
                                     <>
+                                        <div className="border-t border-foreground/10 pt-2 mt-1">
+                                            <p className="px-2 py-1 text-[10px] uppercase tracking-wider text-foreground/40 font-semibold">Administración</p>
+                                        </div>
                                         <Link
                                             href="/admin/reviews"
-                                            className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors"
+                                            className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5"
                                         >
                                             <MessageSquare className="w-4 h-4" />
                                             Moderar Reviews
                                         </Link>
                                         <Link
                                             href="/admin/places"
-                                            className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors"
+                                            className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5"
                                         >
                                             <Shield className="w-4 h-4" />
                                             Panel Admin
@@ -195,37 +214,40 @@ export default function Navbar() {
                                     </>
                                 )}
 
-                                <Link
-                                    href="/add-place"
-                                    className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 hover:shadow-lg transition-all w-fit shadow-accent/20"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    Agregar Lugar
-                                </Link>
+                                <div className="border-t border-foreground/10 pt-2 mt-1 space-y-2">
+                                    <Link
+                                        href="/add-place"
+                                        className="flex items-center gap-3 bg-accent text-white px-4 py-2.5 rounded-lg hover:bg-accent/90 transition-all w-full shadow-accent/20"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        Agregar Lugar
+                                    </Link>
 
-                                <button
-                                    onClick={() => signOut({ callbackUrl: '/' })}
-                                    className="flex items-center gap-2 text-red-600 hover:text-red-700 transition-colors"
-                                >
-                                    <LogOut className="w-4 h-4" />
-                                    Cerrar Sesión
-                                </button>
+                                    <button
+                                        onClick={() => signOut({ callbackUrl: '/' })}
+                                        className="flex items-center gap-3 px-2 py-2 text-red-600 hover:text-red-700 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 w-full"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                        Cerrar Sesión
+                                    </button>
+                                </div>
                             </>
                         ) : (
-                            <>
+                            <div className="border-t border-foreground/10 pt-3 mt-1 space-y-2">
                                 <Link
                                     href="/login"
-                                    className="block text-foreground/80 hover:text-primary transition-colors"
+                                    className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5"
                                 >
+                                    <User className="w-4 h-4" />
                                     Iniciar Sesión
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="block bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors w-fit"
+                                    className="flex items-center justify-center bg-primary text-white px-4 py-2.5 rounded-lg hover:bg-primary/90 transition-colors w-full"
                                 >
                                     Registrarse
                                 </Link>
-                            </>
+                            </div>
                         )}
                     </div>
                 )}

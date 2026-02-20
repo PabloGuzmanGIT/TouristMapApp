@@ -4,6 +4,7 @@ import "./globals.css";
 // @ts-ignore — CSS side-effect import (no types)
 import 'maplibre-gl/dist/maplibre-gl.css';
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { SessionProvider } from "@/components/SessionProvider";
 import { Toaster } from 'sonner';
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         <SessionProvider>
           <Navbar />
           {children}
+          <Footer />
           <Toaster
             position="top-right"
             richColors
