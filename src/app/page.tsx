@@ -14,7 +14,7 @@ async function getHomeData() {
     prisma.city.count(),
     prisma.place.findMany({
       where: { status: 'published', featured: true },
-      include: { city: true },
+      include: { city: { select: { slug: true, name: true } } },
       take: 10,
       orderBy: { createdAt: 'desc' }
     }),
@@ -99,7 +99,7 @@ export default async function HomePage() {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium">
             <Sparkles className="w-4 h-4" />
             <span>Contribuye a la comunidad</span>
           </div>

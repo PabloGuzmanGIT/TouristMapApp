@@ -16,7 +16,7 @@ export default async function MisReviewsPage() {
         where: { userId: session.user.id },
         include: {
             place: {
-                include: { city: true }
+                include: { city: { select: { slug: true, name: true } } }
             }
         },
         orderBy: { createdAt: 'desc' }
@@ -93,10 +93,10 @@ export default async function MisReviewsPage() {
 
                                                 {/* Status badge */}
                                                 <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-xs font-medium ${review.status === 'published'
-                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                                        : review.status === 'pending'
-                                                            ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
-                                                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                                    : review.status === 'pending'
+                                                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+                                                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                                                     }`}>
                                                     {review.status === 'published' ? 'Publicado' :
                                                         review.status === 'pending' ? 'Pendiente' : 'Rechazado'}

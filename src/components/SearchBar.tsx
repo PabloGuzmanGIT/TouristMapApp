@@ -34,7 +34,7 @@ export default function SearchBar({ large = false }: { large?: boolean }) {
                 <button
                     type="submit"
                     className={`
-            absolute right-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white 
+            absolute right-2 bg-primary hover:bg-primary-hover text-white 
             rounded-full hover:shadow-lg transition-all
             ${large ? 'top-2 px-8 py-2' : 'top-1.5 px-6 py-1.5'}
           `}

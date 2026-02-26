@@ -29,7 +29,7 @@ function markerClass(type: 'region' | 'place', category?: string) {
     const base = 'rounded-full border-2 border-white shadow-lg relative flex items-center justify-center cursor-pointer transition-transform hover:scale-110'
 
     if (type === 'region') {
-        return `${base} w-10 h-10 bg-violet-600 text-white font-bold text-sm`
+        return `${base} w-10 h-10 bg-primary text-white font-bold text-sm`
     }
 
     // Cast to any to avoid TS indexing error with loose string
@@ -46,7 +46,7 @@ function popupHTML(item: MapItem) {
             <div style="text-align:center; padding:5px;">
                 <h3 style="font-weight:bold; margin-bottom:4px;">${item.name}</h3>
                 <p style="color:#666; font-size:12px;">${item.count} lugares</p>
-                <div style="margin-top:8px; color:#7c3aed; font-size:12px; font-weight:600;">Click para ir a la región →</div>
+                <div style="margin-top:8px; color:var(--accent); font-size:12px; font-weight:600;">Click para ir a la región →</div>
             </div>
         `
     }

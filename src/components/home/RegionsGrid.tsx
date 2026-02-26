@@ -45,7 +45,7 @@ export default function RegionsGrid({ departments }: { departments: Department[]
                                     className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-6 hover:shadow-xl hover:border-primary/30 transition-all group ring-2 ring-primary/20"
                                 >
                                     <div className="text-center space-y-2">
-                                        <div className="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
+                                        <div className="w-12 h-12 mx-auto rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
                                             {dept.name.charAt(0)}
                                         </div>
                                         <h3 className="font-semibold">{dept.name}</h3>
@@ -61,12 +61,12 @@ export default function RegionsGrid({ departments }: { departments: Department[]
                                 className="relative bg-background/40 backdrop-blur-md border border-foreground/5 rounded-2xl p-6 opacity-60 cursor-default"
                             >
                                 <div className="text-center space-y-2">
-                                    <div className="w-12 h-12 mx-auto rounded-full bg-neutral-300 dark:bg-neutral-700 flex items-center justify-center text-neutral-500 dark:text-neutral-400 font-bold text-xl">
+                                    <div className="w-12 h-12 mx-auto rounded-full bg-foreground/10 flex items-center justify-center text-foreground-secondary font-bold text-xl">
                                         {dept.name.charAt(0)}
                                     </div>
                                     <h3 className="font-semibold text-foreground/50">{dept.name}</h3>
                                 </div>
-                                <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[10px] font-semibold">
+                                <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-warm/10 text-warm text-[10px] font-semibold">
                                     <Clock className="w-3 h-3" />
                                     Pronto
                                 </div>

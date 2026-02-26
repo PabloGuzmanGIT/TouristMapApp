@@ -74,53 +74,66 @@ export async function GET(req: NextRequest) {
         }
 
         // LEVEL 3: GEOLOCATION (NEARBY)
+        // Haversine distance is computed in PostgreSQL — no in-memory full-table scan.
         const lat = parseFloat(searchParams.get('lat') || '0')
         const lng = parseFloat(searchParams.get('lng') || '0')
         const radius = parseFloat(searchParams.get('radius') || '10') // km
 
         if (lat && lng) {
-            // Raw query for Haversine distance
-            // Note: Use queryRaw for complex geospatial if needed, 
-            // but for now we can fetch filtered box or just fetch all and filter in JS if not too many
-            // For MVP/Performance, we'll fetch all published places and filter. 
-            // In PROD with thousands of records, use PostGIS or Haversine SQL.
+            type NearbyRow = {
+                id: string
+                name: string
+                slug: string
+                lat: number
+                lng: number
+                category: string
+                images: unknown
+                ratingAvg: number
+                citySlug: string
+                cityName: string
+                distance: number
+            }
 
-            const allPlaces = await prisma.place.findMany({
-                where: { status: 'published' },
-                select: {
-                    id: true,
-                    name: true,
-                    slug: true,
-                    lat: true,
-                    lng: true,
-                    category: true,
-                    images: true, // Select images array
-                    ratingAvg: true,
-                    city: {
-                        select: { slug: true, name: true }
-                    }
-                }
-            })
-
-            // Filter manually (Haversine)
-            const nearby = allPlaces.filter(place => {
-                if (!place.lat || !place.lng) return false
-                const R = 6371 // Earth radius km
-                const dLat = (place.lat - lat) * Math.PI / 180
-                const dLon = (place.lng - lng) * Math.PI / 180
-                const a =
-                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(lat * Math.PI / 180) * Math.cos(place.lat * Math.PI / 180) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2)
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-                const d = R * c
-                return d <= radius
-            })
+            const nearby = await prisma.$queryRaw<NearbyRow[]>`
+                SELECT
+                    p.id,
+                    p.name,
+                    p.slug,
+                    p.lat,
+                    p.lng,
+                    p.category,
+                    p.images,
+                    p."ratingAvg",
+                    c.slug AS "citySlug",
+                    c.name AS "cityName",
+                    (6371 * acos(
+                        cos(radians(${lat})) * cos(radians(p.lat))
+                        * cos(radians(p.lng) - radians(${lng}))
+                        + sin(radians(${lat})) * sin(radians(p.lat))
+                    )) AS distance
+                FROM "Place" p
+                JOIN "City" c ON c.id = p."cityId"
+                WHERE p.status = 'published'
+                HAVING (6371 * acos(
+                    cos(radians(${lat})) * cos(radians(p.lat))
+                    * cos(radians(p.lng) - radians(${lng}))
+                    + sin(radians(${lat})) * sin(radians(p.lat))
+                )) < ${radius}
+                ORDER BY distance
+                LIMIT 50
+            `
 
             return NextResponse.json(nearby.map(p => ({
-                ...p,
+                id: p.id,
+                name: p.name,
+                slug: p.slug,
+                lat: p.lat,
+                lng: p.lng,
+                category: p.category,
+                ratingAvg: p.ratingAvg,
                 type: 'place',
-                mainImage: Array.isArray(p.images) && p.images.length > 0 ? (p.images as string[])[0] : null
+                city: { slug: p.citySlug, name: p.cityName },
+                mainImage: Array.isArray(p.images) && p.images.length > 0 ? (p.images as string[])[0] : null,
             })))
         }
 

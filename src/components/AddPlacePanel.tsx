@@ -523,7 +523,7 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
         type="button"
         disabled={!canSave || submitting}
         onClick={handleSubmit}
-        className="w-full bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-500 dark:to-violet-500 text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all flex items-center justify-center gap-2"
+        className="w-full bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all flex items-center justify-center gap-2"
       >
         {submitting ? (
           <>

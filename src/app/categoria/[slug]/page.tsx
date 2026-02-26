@@ -2,6 +2,10 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { MapPin, ArrowLeft, Star } from 'lucide-react'
+import { PlaceCategory } from '@prisma/client'
+
+// Cache category pages for 10 minutes
+export const revalidate = 600
 
 // Category metadata — must match the CATEGORY_META in page.tsx
 const CATEGORY_META: Record<string, { icon: string; name: string }> = {
@@ -44,14 +48,19 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
         notFound()
     }
 
+    // Cast is safe — notFound() threw above if slug isn't a valid category
     const places = await prisma.place.findMany({
         where: {
-            category: slug,
+            category: slug as PlaceCategory,
             status: 'published',
         },
-        include: { city: true },
+        include: { city: { select: { slug: true, name: true } } },
         orderBy: { createdAt: 'desc' },
     })
+
+    // Non-null assertion: TS doesn't infer notFound() as `never` here,
+    // but we know meta is defined because notFound() would have thrown.
+    const safeMeta = meta!
 
     return (
         <main className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
@@ -67,9 +76,9 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
                     </Link>
 
                     <div className="flex items-center gap-4">
-                        <span className="text-5xl">{meta.icon}</span>
+                        <span className="text-5xl">{safeMeta.icon}</span>
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold">{meta.name}</h1>
+                            <h1 className="text-3xl md:text-4xl font-bold">{safeMeta.name}</h1>
                             <p className="text-foreground/60 mt-1">
                                 {places.length} {places.length === 1 ? 'lugar encontrado' : 'lugares encontrados'}
                             </p>
@@ -79,9 +88,9 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
 
                 {places.length === 0 ? (
                     <div className="text-center py-20 bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl">
-                        <span className="text-6xl block mb-4">{meta.icon}</span>
+                        <span className="text-6xl block mb-4">{safeMeta.icon}</span>
                         <h2 className="text-xl font-semibold mb-2">
-                            No hay lugares de {meta.name.toLowerCase()} todavía
+                            No hay lugares de {safeMeta.name.toLowerCase()} todavía
                         </h2>
                         <p className="text-foreground/60 mb-6 max-w-md mx-auto">
                             ¿Conoces un lugar increíble? Sé el primero en agregarlo.
@@ -115,7 +124,7 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-foreground/5 flex items-center justify-center">
-                                                <span className="text-4xl opacity-40">{meta.icon}</span>
+                                                <span className="text-4xl opacity-40">{safeMeta.icon}</span>
                                             </div>
                                         )}
                                         {place.featured && (
@@ -134,9 +143,9 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
                                             <MapPin className="w-3.5 h-3.5" />
                                             {place.city.name}
                                         </p>
-                                        {place.description && (
+                                        {place.short && (
                                             <p className="text-sm text-foreground/60 line-clamp-2 mt-1">
-                                                {place.description}
+                                                {place.short}
                                             </p>
                                         )}
                                     </div>
@@ -146,6 +155,6 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
                     </div>
                 )}
             </div>
-        </main>
+        </main >
     )
 }

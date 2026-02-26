@@ -30,16 +30,16 @@ export default function BentoGrid({ places }: BentoGridProps) {
     const mainPlaces = places.slice(0, 5)
 
     return (
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-black/20">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-surface-alt">
             <div className="mx-auto max-w-7xl">
 
                 {/* Header */}
                 <div className="flex items-end justify-between mb-8 md:mb-12">
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-serif font-bold text-neutral-900 dark:text-white mb-2">
+                        <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-2">
                             Destinos Trending
                         </h2>
-                        <p className="text-neutral-500 max-w-md">
+                        <p className="text-foreground-secondary max-w-md">
                             Los lugares favoritos de la comunidad este mes. Descubre joyas que no te puedes perder.
                         </p>
                     </div>
@@ -110,7 +110,7 @@ function PlaceImage({ place }: { place: FeaturedPlace }) {
     const images = place.images as string[] | undefined
     const src = images && images.length > 0 ? images[0] : null
 
-    if (!src) return <div className="absolute inset-0 bg-neutral-200 dark:bg-neutral-800" />
+    if (!src) return <div className="absolute inset-0 bg-surface-alt" />
 
     return (
         <div className="absolute inset-0">

@@ -7,6 +7,12 @@ export type City = {
   name: string
   center: LatLng
   bbox?: BBox
+  // Metadata para hero y presentación
+  heroImage?: string
+  subtitle?: string
+  description?: string
+  altitude?: number
+  stats?: Record<string, number>
 }
 
 export type Area = {
@@ -31,32 +37,108 @@ export type PlaceCategory =
 
 export type Place = {
   id: string
-  citySlug: string        // <-- nuevo
-  areaSlug?: string       // <-- nuevo (p. ej., 'quinua')
+  citySlug: string
+  areaSlug?: string
   slug: string
   name: string
   category: PlaceCategory
   featured?: boolean
   location: LatLng
   short?: string
-  images?: string[]       // 1–2 urls
+  images?: string[]
+  address?: string
+  phone?: string
+  bookingUrl?: string
+  details?: Record<string, unknown>
+  ratingAvg?: number
+  ratingCount?: number
 }
 
-export type Event = {
+// ======= Nuevos tipos — City Page Redesign =======
+
+export type EventCategory = 'festival' | 'cultural' | 'religioso' | 'gastronomico' | 'deportivo'
+
+export type CityEvent = {
   id: string
-  citySlug: string        // <-- nuevo
-  areaSlug?: string       // <-- nuevo
-  placeId?: string
-  slug: string
+  cityId: string
   title: string
-  start: ISODate
-  end?: ISODate
-  tz: string              // 'America/Lima'
+  slug: string
+  description?: string
+  category: EventCategory
+  startDate: string
+  endDate?: string
+  duration?: string
+  location?: string
+  image?: string
 }
+
+export type Tour = {
+  id: string
+  cityId: string
+  title: string
+  slug: string
+  description?: string
+  duration: string
+  price: number
+  currency: string
+  highlights?: string[]
+  image?: string
+  images?: string[]
+  ratingAvg: number
+  ratingCount: number
+  whatsappNumber?: string
+  bookingUrl?: string
+}
+
+export type VideoCategory = 'documental' | 'clip' | 'drone' | 'entrevista'
+
+export type CityVideo = {
+  id: string
+  cityId: string
+  title: string
+  slug: string
+  description?: string
+  category: VideoCategory
+  thumbnailUrl?: string
+  videoUrl?: string
+  duration?: string
+  views: number
+  featured: boolean
+  publishedAt?: string
+}
+
+export type ResearchType = 'tesis' | 'articulo' | 'investigacion' | 'libro'
+
+export type CityResearch = {
+  id: string
+  cityId: string
+  title: string
+  slug: string
+  description?: string
+  type: ResearchType
+  category?: string
+  authorName: string
+  institution?: string
+  year?: number
+  pages?: number
+  doi?: string
+  url?: string
+}
+
+// ======= Tipos agregados =======
 
 export type CityData = {
   city: City
-  areas?: Area[]          // <-- nuevo
+  areas?: Area[]
   places: Place[]
+}
+
+export type CityPageData = {
+  city: City
+  places: Place[]
+  events: CityEvent[]
+  tours: Tour[]
+  videos: CityVideo[]
+  researches: CityResearch[]
 }
 

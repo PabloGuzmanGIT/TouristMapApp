@@ -71,6 +71,28 @@ enum PublishStatus {
   rejected
 }
 
+enum EventCategory {
+  festival
+  cultural
+  religioso
+  gastronomico
+  deportivo
+}
+
+enum VideoCategory {
+  documental
+  clip
+  drone
+  entrevista
+}
+
+enum ResearchType {
+  tesis
+  articulo
+  investigacion
+  libro
+}
+
 model City {
   id   String @id @default(cuid())
   slug String @unique
@@ -84,9 +106,20 @@ model City {
   bboxE     Float?
   bboxN     Float?
 
-  areas  Area[]
-  places Place[]
-  editors User[] @relation("CityEditors")
+  // Metadata para hero y presentación
+  heroImage   String?   // URL de la imagen de fondo del hero
+  subtitle    String?   // e.g. "Ciudad de las 33 Iglesias"
+  description String?   // Descripción larga para el hero
+  altitude    Int?      // metros sobre el nivel del mar
+  stats       Json?     // { "iglesias": 33, "puntos": 47, "tours": 12 }
+
+  areas      Area[]
+  places     Place[]
+  events     Event[]
+  tours      Tour[]
+  videos     Video[]
+  researches Research[]
+  editors    User[] @relation("CityEditors")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -162,6 +195,114 @@ model Place {
   @@index([areaId])
   @@index([status])
   @@index([category])
+}
+
+// ======= NUEVOS MODELOS — City Page Redesign =======
+
+model Event {
+  id     String @id @default(cuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  title       String
+  slug        String
+  description String?
+  category    EventCategory
+
+  startDate DateTime
+  endDate   DateTime?
+  duration  String?    // "10 días", "1 semana"
+  location  String?    // "Centro Histórico"
+  image     String?    // URL de imagen de portada
+
+  status    PublishStatus @default(published)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([cityId, slug])
+  @@index([cityId, startDate])
+  @@index([cityId, status])
+}
+
+model Tour {
+  id     String @id @default(cuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  title       String
+  slug        String
+  description String?
+  duration    String        // "4 horas", "Día completo"
+  price       Float         // en PEN (soles)
+  currency    String        @default("PEN")
+  highlights  Json?         // string[] — ["⛪ 8 iglesias", "📸 Foto stops"]
+  image       String?       // URL imagen de portada
+  images      Json?         // string[] URLs adicionales
+
+  ratingAvg   Float   @default(0)
+  ratingCount Int     @default(0)
+
+  whatsappNumber String?    // Para reservas por WhatsApp
+  bookingUrl     String?
+
+  status    PublishStatus @default(published)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([cityId, slug])
+  @@index([cityId, status])
+}
+
+model Video {
+  id     String @id @default(cuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  title        String
+  slug         String
+  description  String?
+  category     VideoCategory
+
+  thumbnailUrl String?    // URL miniatura
+  videoUrl     String?    // YouTube/Vimeo embed URL
+  duration     String?    // "28 min"
+  views        Int        @default(0)
+  featured     Boolean    @default(false)
+
+  publishedAt DateTime?
+  status      PublishStatus @default(published)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([cityId, slug])
+  @@index([cityId, status])
+}
+
+model Research {
+  id     String @id @default(cuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  title       String
+  slug        String
+  description String?
+  type        ResearchType
+  category    String?       // "Historia", "Arqueología", etc.
+
+  authorName  String
+  institution String?       // "UNSCH", "PUCP"
+
+  year  Int?
+  pages Int?
+  doi   String?
+  url   String?
+
+  status    PublishStatus @default(published)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([cityId, slug])
+  @@index([cityId, status])
 }
 
 model User {
