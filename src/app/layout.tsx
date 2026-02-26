@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 // @ts-ignore — CSS side-effect import (no types)
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -8,10 +8,19 @@ import Footer from "@/components/Footer";
 import { SessionProvider } from "@/components/SessionProvider";
 import { Toaster } from 'sonner';
 
-const outfit = Outfit({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-playfair",
   display: "swap",
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${outfit.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${playfair.variable} ${dmSans.variable} font-sans antialiased bg-background text-foreground`}
       >
         <SessionProvider>
           <Navbar />

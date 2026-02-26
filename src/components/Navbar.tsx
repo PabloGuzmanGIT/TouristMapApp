@@ -19,8 +19,8 @@ export default function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
-                        <MapPin className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
-                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                        <MapPin className="w-6 h-6 text-accent group-hover:scale-110 transition-transform" />
+                        <span className="text-xl font-heading font-bold text-primary">
                             Explora Perú
                         </span>
                     </Link>
@@ -45,7 +45,7 @@ export default function Navbar() {
                                         onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                                         className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-foreground/5 transition-colors"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold">
+                                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-semibold">
                                             {session.user?.name?.[0]?.toUpperCase() || 'U'}
                                         </div>
                                         <span className="text-sm font-medium">{session.user?.name || 'Usuario'}</span>
@@ -116,7 +116,7 @@ export default function Navbar() {
 
                                 <Link
                                     href="/add-place"
-                                    className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 hover:shadow-lg transition-all shadow-accent/20"
+                                    className="flex items-center gap-2 bg-accent text-primary px-4 py-2 rounded-lg hover:bg-accent-hover hover:shadow-lg transition-all shadow-accent/20 font-semibold"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Agregar Lugar
@@ -174,7 +174,7 @@ export default function Navbar() {
                             <>
                                 <div className="border-t border-foreground/10 pt-3 mt-1">
                                     <div className="flex items-center gap-3 px-2 py-2">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-sm">
+                                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-semibold text-sm">
                                             {session.user?.name?.[0]?.toUpperCase() || 'U'}
                                         </div>
                                         <div>
@@ -217,7 +217,7 @@ export default function Navbar() {
                                 <div className="border-t border-foreground/10 pt-2 mt-1 space-y-2">
                                     <Link
                                         href="/add-place"
-                                        className="flex items-center gap-3 bg-accent text-white px-4 py-2.5 rounded-lg hover:bg-accent/90 transition-all w-full shadow-accent/20"
+                                        className="flex items-center gap-3 bg-accent text-primary px-4 py-2.5 rounded-lg hover:bg-accent-hover transition-all w-full shadow-accent/20 font-semibold"
                                     >
                                         <Plus className="w-4 h-4" />
                                         Agregar Lugar
@@ -225,7 +225,7 @@ export default function Navbar() {
 
                                     <button
                                         onClick={() => signOut({ callbackUrl: '/' })}
-                                        className="flex items-center gap-3 px-2 py-2 text-red-600 hover:text-red-700 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 w-full"
+                                        className="flex items-center gap-3 px-2 py-2 text-red-600 hover:text-red-700 transition-colors rounded-lg hover:bg-red-50 w-full"
                                     >
                                         <LogOut className="w-4 h-4" />
                                         Cerrar Sesión

@@ -38,9 +38,9 @@ export default function HeroVisual({ onToggleMap, onLocateMe, placeCount }: Hero
                 </div>
 
                 {/* Main Title */}
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white tracking-wide leading-tight drop-shadow-lg animate-in slide-in-from-bottom-6 duration-1000 delay-200">
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-heading text-white tracking-wide leading-tight drop-shadow-lg animate-in slide-in-from-bottom-6 duration-1000 delay-200">
                     Descubre lo mejor <br className="hidden md:block" />
-                    <span className="italic text-primary-foreground">del Perú</span>
+                    <span className="italic text-accent-hover">del Perú</span>
                 </h1>
 
                 {/* Subtitle */}
@@ -53,7 +53,7 @@ export default function HeroVisual({ onToggleMap, onLocateMe, placeCount }: Hero
                     {/* Map Toggle Button (Primary Action) */}
                     <button
                         onClick={onToggleMap}
-                        className="bg-white text-neutral-900 hover:bg-neutral-100 px-8 py-4 rounded-full font-bold text-lg shadow-xl shadow-black/20 flex items-center gap-3 transition-all hover:scale-105 hover:-translate-y-1"
+                        className="bg-accent text-primary hover:bg-accent-hover px-8 py-4 rounded-full font-bold text-lg shadow-xl shadow-black/20 flex items-center gap-3 transition-all hover:scale-105 hover:-translate-y-1"
                     >
                         <MapIcon className="w-6 h-6" />
                         <span>Ver Mapa</span>

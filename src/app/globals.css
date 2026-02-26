@@ -4,51 +4,93 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
   --color-accent: var(--accent);
-  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  --color-accent-hover: var(--accent-hover);
+  --color-warm: var(--warm);
+  --color-warm-hover: var(--warm-hover);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-footer: var(--footer);
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-heading: var(--font-playfair), Georgia, serif;
 }
 
 :root {
-  /* Stone 50 - Warm/Organic Background */
-  --background: #fafaf9;
-  /* Stone 900 */
-  --foreground: #1c1917;
+  /* Fondo principal */
+  --background: #faf8f4;
+  /* Texto principal */
+  --foreground: #1a1a1a;
+  /* Texto secundario */
+  --foreground-secondary: #6b6b6b;
 
-  /* Teal 600 - Nature & Trust */
-  --primary: #0d9488;
+  /* Verde oscuro (primario) — Encabezados, botones, navbar */
+  --primary: #1a3c34;
+  /* Verde medio — Hover, acentos secundarios */
+  --primary-hover: #2d5a4e;
   --primary-foreground: #ffffff;
 
-  /* Violet 600 - Culture & Mystery */
-  --secondary: #7c3aed;
+  /* Dorado (acento) — Precios, badges, enlaces destacados */
+  --accent: #d4a853;
+  /* Dorado claro — Hover del dorado */
+  --accent-hover: #f0d48a;
 
-  /* Rose 500 - Action & Vibrancy */
-  --accent: #f43f5e;
-}
+  /* Terracota (cálido) — Fechas, tags de festival */
+  --warm: #c75b39;
+  /* Terracota claro — Hover del terracota */
+  --warm-hover: #e8916f;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Stone 950 - Premium Dark */
-    --background: #0c0a09;
-    /* Stone 50 */
-    --foreground: #fafaf9;
+  /* Blanco tarjetas */
+  --surface: #ffffff;
+  /* Fondo cálido — Secciones alternadas */
+  --surface-alt: #f5f0e8;
 
-    /* Teal 400 - Bright for Dark Mode */
-    --primary: #2dd4bf;
-    --primary-foreground: #000000;
-
-    /* Violet 400 */
-    --secondary: #a78bfa;
-
-    /* Rose 500 */
-    --accent: #f43f5e;
-  }
+  /* Footer oscuro */
+  --footer: #0f2921;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+/* Custom form inputs — BookingModal */
+.form-input-custom {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #e0ddd6;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  background: var(--background);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+}
+
+.form-input-custom:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(212, 168, 83, 0.15);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

@@ -24,8 +24,8 @@ export default function AboutPage() {
                 </div>
 
                 <div className="relative z-10 text-center px-4 max-w-4xl mx-auto space-y-6">
-                    <h1 className="text-4xl md:text-6xl font-serif font-bold text-white">
-                        Redescubriendo <span className="text-primary italic">Ayacucho</span>
+                    <h1 className="text-4xl md:text-6xl font-heading font-bold text-white">
+                        Redescubriendo <span className="text-accent-hover italic">Ayacucho</span>
                     </h1>
                     <p className="text-xl text-white/90 max-w-2xl mx-auto">
                         Somos una iniciativa digital dedicada a poner en valor nuestra riqueza cultural, histórica y natural.
@@ -50,7 +50,7 @@ export default function AboutPage() {
                             </div>
 
                             <div className="space-y-4">
-                                <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+                                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent">
                                     <Heart className="w-6 h-6" />
                                 </div>
                                 <h2 className="text-3xl font-bold">Por qué lo hacemos</h2>
@@ -74,7 +74,7 @@ export default function AboutPage() {
             </section>
 
             {/* Team / Community Section */}
-            <section className="py-20 bg-neutral-50 dark:bg-white/5">
+            <section className="py-20 bg-surface-alt">
                 <div className="mx-auto max-w-4xl text-center px-4">
                     <Users className="w-12 h-12 mx-auto text-primary mb-6" />
                     <h2 className="text-3xl font-bold mb-6">Únete a la Comunidad</h2>

@@ -137,7 +137,7 @@ export default function AdminPlacesPage() {
                     </div>
                     <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-xl p-4">
                         <p className="text-sm text-foreground/60">Destacados</p>
-                        <p className="text-3xl font-bold text-secondary">
+                        <p className="text-3xl font-bold text-accent">
                             {places.filter(p => p.featured).length}
                         </p>
                     </div>

@@ -122,7 +122,7 @@ export default function AdminUsersPage() {
                     </div>
                     <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-xl p-4">
                         <p className="text-sm text-foreground/60">Administradores</p>
-                        <p className="text-3xl font-bold text-secondary">
+                        <p className="text-3xl font-bold text-accent">
                             {users.filter(u => u.role === 'admin').length}
                         </p>
                     </div>
@@ -167,10 +167,10 @@ export default function AdminUsersPage() {
                                         <td className="p-4">
                                             <span
                                                 className={`px-3 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
-                                                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                                                        : user.role === 'editor'
-                                                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                                                            : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'
+                                                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                                                    : user.role === 'editor'
+                                                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                                        : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'
                                                     }`}
                                             >
                                                 {user.role === 'admin' && <Shield className="w-3 h-3 inline mr-1" />}
