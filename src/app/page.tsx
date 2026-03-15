@@ -1,30 +1,21 @@
 import Link from 'next/link'
-import { Sparkles, Plus, ChevronRight } from 'lucide-react'
-import Stats from '@/components/Stats'
+import { Sparkles, Plus } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import Hero from '@/components/home/Hero'
 import BentoGrid from '@/components/home/BentoGrid'
-import RegionsGrid from '@/components/home/RegionsGrid'
+import HowItWorks from '@/components/home/HowItWorks'
+import BusinessCTA from '@/components/home/BusinessCTA'
 
 export const revalidate = 3600 // Revalidate every hour
 
 async function getHomeData() {
-  const [placesCount, departmentsCount, featuredPlaces, allDepartments, categoryCounts] = await Promise.all([
+  const [placesCount, featuredPlaces, categoryCounts] = await Promise.all([
     prisma.place.count({ where: { status: 'published' } }),
-    prisma.city.count(),
     prisma.place.findMany({
       where: { status: 'published', featured: true },
       include: { city: { select: { slug: true, name: true } } },
       take: 10,
       orderBy: { createdAt: 'desc' }
-    }),
-    prisma.city.findMany({
-      select: {
-        slug: true,
-        name: true,
-        _count: { select: { places: true } }
-      },
-      orderBy: { name: 'asc' }
     }),
     prisma.place.groupBy({
       by: ['category'],
@@ -33,7 +24,7 @@ async function getHomeData() {
     })
   ])
 
-  return { placesCount, departmentsCount, featuredPlaces, allDepartments, categoryCounts }
+  return { placesCount, featuredPlaces, categoryCounts }
 }
 
 // Category metadata (icon + display name)
@@ -49,7 +40,7 @@ const CATEGORY_META: Record<string, { icon: string; name: string }> = {
 }
 
 export default async function HomePage() {
-  const { placesCount, departmentsCount, featuredPlaces, allDepartments, categoryCounts } = await getHomeData()
+  const { placesCount, featuredPlaces, categoryCounts } = await getHomeData()
 
   // Build categories with real counts
   const categories = Object.entries(CATEGORY_META).map(([slug, meta]) => {
@@ -59,16 +50,16 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* New Hybrid Hero Section */}
+      {/* 1. Hero — Propuesta de valor + dual CTA */}
       <Hero placeCount={placesCount} />
 
-      {/* Regions / Departments - Collapsible */}
-      <RegionsGrid departments={allDepartments} />
+      {/* 2. Cómo funciona — Confianza y verificación */}
+      <HowItWorks />
 
-      {/* Featured Places (Bento Grid) */}
+      {/* 3. Destinos Trending — BentoGrid */}
       <BentoGrid places={featuredPlaces} />
 
-      {/* Categories */}
+      {/* 4. Categorías */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-3xl font-bold mb-8 text-center">Explora por Categoría</h2>
@@ -89,14 +80,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <Stats
-        placesCount={placesCount}
-        departmentsCount={departmentsCount}
-        contributorsCount={143}
-      />
+      {/* 5. Sección para negocios */}
+      <BusinessCTA />
 
-      {/* CTA Section */}
+      {/* 6. CTA comunidad */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium">
