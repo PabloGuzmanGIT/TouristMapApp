@@ -85,7 +85,7 @@ export default function AdminUsersPage() {
     }
 
     return (
-        <main className="min-h-screen bg-background p-8">
+        <main className="p-8">
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -98,12 +98,6 @@ export default function AdminUsersPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Link
-                            href="/admin/places"
-                            className="px-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/5 transition-colors"
-                        >
-                            ← Volver a Lugares
-                        </Link>
                         <Link
                             href="/admin/users/create"
                             className="flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-lg hover:bg-accent/90 transition-all shadow-accent/20 shadow-lg"

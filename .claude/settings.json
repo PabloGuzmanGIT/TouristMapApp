@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find g:tourism-mapsrcappadmin -type f -name *.tsx -o -name *.ts)",
+      "Bash(xargs grep:*)",
+      "Bash(find g:tourism-mapsrccomponents -type f -name *sidebar* -o -name *nav* -o -name *admin*)",
+      "Bash(ls -la g:tourism-mapsrcappadmin*)",
+      "Bash(node scripts/generate-icons.mjs)",
+      "Bash(npx prisma:*)",
+      "Bash(tasklist)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx tsx:*)",
+      "Bash(node -e \"const l = require\\(''lucide-react''\\); console.log\\(''Accessibility'' in l, ''Wrench'' in l, ''Settings2'' in l, ''HandHelping'' in l\\)\")",
+      "Bash(npx tsc:*)"
+    ],
+    "additionalDirectories": [
+      "g:\\tourism-map\\src\\app\\api\\admin\\solicitudes"
+    ]
+  }
+}

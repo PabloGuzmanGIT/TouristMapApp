@@ -51,7 +51,7 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.role = user.role
                 token.id = user.id
-                // Attach role and managedCityId to token during sign-in
+                token.name = user.name
                 token.managedCityId = user.managedCityId || null
             }
             return token
@@ -59,6 +59,7 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.sub!
+                session.user.name = token.name as string
                 session.user.role = token.role as string
                 session.user.managedCityId = token.managedCityId as string | null
             }
@@ -66,8 +67,8 @@ export const authOptions: NextAuthOptions = {
         }
     },
     pages: {
-        signIn: '/admin/login',
-        error: '/admin/login',
+        signIn: '/login',
+        error: '/login',
     },
     session: {
         strategy: "jwt",

@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth-options'
 
 export async function GET() {
-    const cookieStore = await cookies()
-    const authCookie = cookieStore.get('admin-auth')
+    const session = await getServerSession(authOptions)
 
-    if (authCookie?.value === 'true') {
+    if (session && session.user.role === 'admin') {
         return NextResponse.json({ authenticated: true })
     }
 

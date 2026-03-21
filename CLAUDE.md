@@ -62,9 +62,66 @@ npx prisma generate   # Also runs automatically via postinstall
 - Singleton Prisma client in `src/lib/prisma.ts`
 - Slugs are unique per city (`@@unique([cityId, slug])`)
 
+### PWA
+- **Library**: `@serwist/next` v9 + `serwist` (Workbox-based, replaces abandoned `next-pwa`)
+- **Manifest**: `src/app/manifest.ts` (Next.js file convention, served at `/manifest.webmanifest`)
+- **Service Worker**: `src/app/sw.ts` → compiled to `public/sw.js` (gitignored)
+- **Offline fallback**: `src/app/offline/page.tsx`
+- **Icons**: `public/icons/` (180, 192, 384, 512 PNG)
+- **Caching**: NetworkFirst for pages (respects ISR), CacheFirst for static assets, StaleWhileRevalidate for fonts
+- **Build**: Uses `--webpack` flag because Serwist doesn't support Turbopack yet. Dev uses Turbopack normally (SW disabled in dev).
+- **Testing PWA locally**: `npm run build && npm run start`, then check Chrome DevTools → Application
+
 ### Key Conventions
 - UI text and enum values are in Spanish (e.g., `PlaceCategory.restaurant`, `museo`, `naturaleza`)
 - Fonts: Playfair Display (headings), DM Sans (body)
 - Theme colors: green, gold, terracotta (defined in `src/app/globals.css`)
 - Types are centralized in `src/types.ts`
 - Path alias: `@/*` maps to `src/*`
+
+---
+
+## Development Log
+
+### 2026-03-17 - Feature: PWA Setup
+
+**Contexto:** La app funcionaba bien como web responsive pero no era instalable en móviles ni tenía soporte offline. Se necesitaba convertirla en PWA completa.
+
+**Cambios realizados:**
+- `src/app/manifest.ts`: Nuevo — manifest PWA con nombre "Explora Perú", colores de marca, íconos, display standalone, idioma español
+- `src/app/sw.ts`: Nuevo — service worker con precache automático, defaultCache de Serwist, fallback offline para navegación
+- `src/app/offline/page.tsx`: Nuevo — página "Sin conexión" en español con botón reintentar
+- `public/icons/`: Nuevo — íconos PNG generados con sharp (180, 192, 384, 512px) usando colores de marca (#1a3c34 fondo, #d4a853 texto "EP")
+- `next.config.ts`: Envuelto con `withSerwistInit` (swSrc, swDest, disable en dev)
+- `src/app/layout.tsx`: Agregado export `viewport` (themeColor, width, initialScale, maximumScale) y metadata PWA (appleWebApp, icons, formatDetection, mobile-web-app-capable)
+- `tsconfig.json`: Agregado `"webworker"` a lib y `"@serwist/next/typings"` a types
+- `.gitignore`: Agregado patrones para archivos SW generados (sw.js, sw.js.map, workbox-*.js)
+- `package.json`: Build cambiado a `next build --webpack`, agregado script `dev:pwa`
+
+**Decisiones técnicas:**
+- `@serwist/next` sobre `next-pwa`: next-pwa está abandonado, Serwist es su sucesor mantenido y compatible con App Router
+- `manifest.ts` sobre `manifest.json` estático: convención nativa de Next.js, tipado, sin config extra
+- `--webpack` en build: Serwist no soporta Turbopack aún para generar el SW; dev sigue con Turbopack (SW deshabilitado)
+- `defaultCache` de Serwist: estrategias sensatas para Next.js sin config manual (NetworkFirst para páginas ISR, CacheFirst para estáticos)
+- `maximumScale: 5` (no 1): respetar accesibilidad, no bloquear zoom del usuario
+
+**Pendientes/Deuda técnica:**
+- Íconos son placeholder generados (letras "EP") — reemplazar con logo real del proyecto
+- No hay splash screens para iOS (Apple requiere imágenes específicas por dispositivo)
+- Serwist no soporta Turbopack — seguir issue #54 del repo para migrar cuando esté listo
+- No hay cache específico para tiles de MapTiler (funciona con defaultCache pero podría optimizarse)
+- El middleware muestra warning de deprecación en Next.js 16 ("use proxy instead")
+
+**Próximos pasos:**
+- Diseñar/crear logo real y regenerar íconos PWA
+- Probar instalación en dispositivo Android real
+- Correr Lighthouse PWA audit y corregir cualquier issue
+- Considerar migración de middleware a proxy (nueva convención Next.js 16)
+
+**Comandos/Snippets útiles:**
+```bash
+npm run dev          # Dev normal (Turbopack, sin SW)
+npm run dev:pwa      # Dev con SW activo (webpack)
+npm run build        # Build producción con SW (usa --webpack)
+npm run start        # Probar PWA localmente después del build
+```

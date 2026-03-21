@@ -29,7 +29,7 @@ export default function AdminPlacesPage() {
     useEffect(() => {
         async function checkAuth() {
             try {
-                const res = await fetch('/api/auth/check')
+                const res = await fetch('/api/auth/check-admin')
                 if (!res.ok) {
                     router.push('/admin/login')
                     return
@@ -86,7 +86,7 @@ export default function AdminPlacesPage() {
     }
 
     return (
-        <main className="min-h-screen bg-background p-8">
+        <main className="p-8">
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -99,26 +99,6 @@ export default function AdminPlacesPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Link
-                            href="/admin/users"
-                            className="px-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/5 transition-colors"
-                        >
-                            👥 Usuarios
-                        </Link>
-                        <button
-                            onClick={async () => {
-                                if (confirm('¿Cerrar sesión?')) {
-                                    await fetch('/api/auth/logout', { method: 'POST' })
-                                    router.push('/admin/login')
-                                }
-                            }}
-                            className="flex items-center gap-2 px-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/5 transition-colors"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            Cerrar Sesión
-                        </button>
                         <Link
                             href="/add-place"
                             className="flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-lg hover:bg-accent/90 transition-all shadow-accent/20 shadow-lg"

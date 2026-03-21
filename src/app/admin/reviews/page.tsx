@@ -130,18 +130,12 @@ export default function AdminReviewsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background p-6">
+        <div className="p-6">
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
                         <h1 className="text-3xl font-bold">Moderación de Reviews</h1>
-                        <Link
-                            href="/admin/places"
-                            className="px-4 py-2 bg-foreground/10 rounded-lg hover:bg-foreground/20 transition-colors"
-                        >
-                            ← Volver a Admin
-                        </Link>
                     </div>
                     <p className="text-foreground/60">Revisa y modera las reviews de los usuarios</p>
                 </div>

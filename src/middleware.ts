@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname
 
     // Public admin routes (no require auth)
@@ -11,14 +12,13 @@ export function middleware(request: NextRequest) {
         '/admin/reset-password'
     ]
 
-    // Check if path is public
     const isPublicRoute = publicAdminRoutes.some(route => path.startsWith(route))
 
     // Only protect /admin routes that are NOT public
     if (path.startsWith('/admin') && !isPublicRoute) {
-        const authCookie = request.cookies.get('admin-auth')
+        const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
 
-        if (!authCookie || authCookie.value !== 'true') {
+        if (!token || token.role !== 'admin') {
             const loginUrl = new URL('/admin/login', request.url)
             return NextResponse.redirect(loginUrl)
         }
@@ -27,7 +27,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
 }
 
-// Matcher debe incluir todas las rutas admin
 export const config = {
     matcher: [
         '/admin/:path*',

@@ -181,6 +181,11 @@ model Place {
   address    String?
   schedule   Json? // { mon:[{open,close}], ... } + excepciones si quieres
 
+  // datos del dueño (registro de negocios)
+  ownerName  String?
+  ownerEmail String?
+  ownerPhone String?
+
   // agregados de reseñas (publicadas)
   ratingAvg   Float @default(0)
   ratingCount Int   @default(0)

@@ -91,7 +91,7 @@ export default function EditPlacePage({ params }: { params: Promise<{ id: string
     useEffect(() => {
         async function checkAuth() {
             try {
-                const res = await fetch('/api/auth/check')
+                const res = await fetch('/api/auth/check-admin')
                 if (!res.ok) {
                     router.push('/admin/login')
                 }

@@ -1,0 +1,19 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="256" cy="256" r="256" fill="#1a3c34"/>
+  <!-- Mochila -->
+  <rect x="166" y="160" width="180" height="220" rx="28" fill="#d4a853"/>
+  <!-- Asa superior -->
+  <rect x="212" y="115" width="88" height="60" rx="18" fill="none" stroke="#d4a853" stroke-width="12"/>
+  <!-- Correas -->
+  <line x1="196" y1="185" x2="196" y2="340" stroke="#1a3c34" stroke-width="8" stroke-linecap="round"/>
+  <line x1="316" y1="185" x2="316" y2="340" stroke="#1a3c34" stroke-width="8" stroke-linecap="round"/>
+  <!-- Bolsillo con brujula -->
+  <rect x="206" y="270" width="100" height="80" rx="12" fill="#1a3c34"/>
+  <!-- Brujula dentro del bolsillo -->
+  <circle cx="256" cy="310" r="28" fill="none" stroke="#d4a853" stroke-width="3"/>
+  <polygon points="256,285 262,305 256,298 250,305" fill="#d4a853"/>
+  <polygon points="256,335 250,315 256,322 262,315" fill="#d4a853" opacity="0.5"/>
+  <polygon points="231,310 251,304 244,310 251,316" fill="#d4a853" opacity="0.5"/>
+  <polygon points="281,310 261,316 268,310 261,304" fill="#d4a853"/>
+  <circle cx="256" cy="310" r="4" fill="#d4a853"/>
+</svg>

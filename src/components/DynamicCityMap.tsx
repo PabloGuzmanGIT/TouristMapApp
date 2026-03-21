@@ -12,8 +12,10 @@ interface DynamicCityMapProps {
     city: City
     places: Place[]
     focusPlaceSlug?: string | null
+    enablePicker?: boolean
+    onPick?: (coord: { lat: number; lng: number }) => void
 }
 
-export default function DynamicCityMap({ city, places, focusPlaceSlug }: DynamicCityMapProps) {
-    return <CityMap city={city} places={places} focusPlaceSlug={focusPlaceSlug} />
+export default function DynamicCityMap({ city, places, focusPlaceSlug, enablePicker, onPick }: DynamicCityMapProps) {
+    return <CityMap city={city} places={places} focusPlaceSlug={focusPlaceSlug} enablePicker={enablePicker} onPick={onPick} />
 }

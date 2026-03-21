@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 export async function POST() {
-    const cookieStore = await cookies()
-    cookieStore.delete('admin-auth')
-
+    // NextAuth handles session cleanup via signOut on the client side.
+    // This endpoint exists for backwards compatibility.
     return NextResponse.json({ success: true })
 }
