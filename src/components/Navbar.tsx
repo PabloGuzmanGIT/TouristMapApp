@@ -30,7 +30,7 @@ export default function Navbar() {
                         <Link href="/" className="text-foreground/80 hover:text-primary transition-colors">
                             Inicio
                         </Link>
-                        <Link href="/#regiones" className="text-foreground/80 hover:text-primary transition-colors">
+                        <Link href="/explorar" className="text-foreground/80 hover:text-primary transition-colors">
                             Explorar
                         </Link>
                         <Link href="/nosotros" className="text-foreground/80 hover:text-primary transition-colors">
@@ -161,7 +161,7 @@ export default function Navbar() {
                             <Home className="w-4 h-4" />
                             Inicio
                         </Link>
-                        <Link href="/#regiones" className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5">
+                        <Link href="/explorar" className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5">
                             <Compass className="w-4 h-4" />
                             Explorar
                         </Link>

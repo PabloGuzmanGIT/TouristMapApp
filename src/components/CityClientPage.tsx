@@ -84,7 +84,7 @@ export default function CityClientPage({ cityPageData }: CityClientPageProps) {
                     id="map-section"
                     className="rounded-2xl overflow-hidden shadow-lg"
                 >
-                    <div className="h-[480px] w-full">
+                    <div className="h-[85vh] w-full">
                         <DynamicCityMap
                             city={{ ...city, bbox: undefined }}
                             places={filteredPlaces}

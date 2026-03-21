@@ -5,6 +5,7 @@ import maplibregl from 'maplibre-gl'
 import type { City, Place, LatLng, PlaceCategory } from '@/types'
 import { HYBRID_STYLE_URL } from '@/lib/map-config'
 import { COLOR_MAP } from '@/lib/constants'
+import { createPopupManager } from '@/lib/map-popup'
 
 type Props = {
   city: City
@@ -28,74 +29,39 @@ function markerClass(p: Place) {
 }
 
 function popupHTML(citySlug: string, p: Place) {
-  const img1 = p.images?.[0]
-  const img2 = p.images?.[1]
-  const imgBlock = img1
-    ? `<div style="margin-bottom:6px;">
-         <img src="${img1}" alt="${p.name}"
-              style="width:220px;height:120px;object-fit:cover;border-radius:8px;display:block"/>
-         ${img2 ? `<div style="margin-top:6px;"><img src="${img2}" alt="${p.name} 2"
-              style="width:106px;height:64px;object-fit:cover;border-radius:6px;display:block"/></div>` : ''}
-       </div>` : ''
-
-
   return `
-    <div class="map-popup" 
-         onmouseenter="clearTimeout(window.popupHideTimeout)" 
-         onmouseleave="window.popupHideTimeout = setTimeout(() => this.parentElement.remove(), 500)">
-      
-      ${img1 ? `
+    <div class="map-popup">
+      ${p.images?.[0] ? `
         <div style="margin-bottom:8px;">
-          <img src="${img1}" alt="${p.name}" 
+          <img src="${p.images[0]}" alt="${p.name}"
                style="width:100%;height:120px;object-fit:cover;border-radius:6px;"/>
         </div>
       ` : ''}
-      
+
       <div style="padding:0 8px 8px 8px;">
         <h3 style="margin:0 0 4px 0; color:#1a1a1a; font-size:16px; font-weight:600;">${p.name}</h3>
-        
+
         ${p.short ? `
           <p style="margin:0 0 12px 0; color:#666; font-size:14px; line-height:1.4;">${p.short}</p>
         ` : ''}
-        
+
         <div style="display:flex; gap:8px; justify-content:space-between; align-items:center;">
-          <a href="/${citySlug}/places/${p.slug}" 
-             style="flex:1; background:#007bff; color:white; padding:8px 12px; border-radius:4px; 
+          <a href="/${citySlug}/places/${p.slug}"
+             style="flex:1; background:#007bff; color:white; padding:8px 12px; border-radius:4px;
                     text-decoration:none; text-align:center; font-size:14px; font-weight:500;"
              onclick="event.stopPropagation()">
             Ver detalles
           </a>
-          
+
           <button onclick="navigator.clipboard.writeText(window.location.origin + '/${citySlug}/places/${p.slug}')"
-                  style="background:#f8f9fa; border:1px solid #ddd; border-radius:4px; padding:8px; 
+                  style="background:#f8f9fa; border:1px solid #ddd; border-radius:4px; padding:8px;
                          cursor:pointer; color:#666;" title="Copiar enlace">
             📋
           </button>
         </div>
       </div>
     </div>
-  `;
-  // `
-  //   <div style="max-width:280px; padding:8px;" >
-  //     ${img1 ? `
-  //       <img src="${img1}" alt="${p.name}" 
-  //            style="width:100%;height:120px;object-fit:cover;border-radius:6px;margin-bottom:8px;"/>
-  //     ` : ''}
-
-  //     <h3 style="margin:0 0 4px 0; color:#1a1a1a; font-size:16px;">${p.name}</h3>
-
-  //     ${p.short ? `
-  //       <p style="margin:0 0 8px 0; color:#666; font-size:14px; line-height:1.3;">${p.short}</p>
-  //     ` : ''}
-
-  //     <a href="/${citySlug}/places/${p.slug}" 
-  //        style="display:inline-block; background:#007bff; color:white; padding:6px 12px; 
-  //               border-radius:4px; text-decoration:none; font-size:14px; font-weight:500;" >
-  //       Ver detalles
-  //     </a>
-  //   </div>
-  // `
-
+  `
 }
 
 export default function CityMap({
@@ -111,6 +77,7 @@ export default function CityMap({
   const markersRef = useRef<maplibregl.Marker[]>([])
   const geoCtrlRef = useRef<maplibregl.GeolocateControl | null>(null)
   const fallbackUserMarkerRef = useRef<maplibregl.Marker | null>(null)
+  const popupMgrRef = useRef<ReturnType<typeof createPopupManager> | null>(null)
 
   // init once
   useEffect(() => {
@@ -125,6 +92,7 @@ export default function CityMap({
     })
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right')
     mapInstance.current = map
+    popupMgrRef.current = createPopupManager(map)
 
     // Geolocate control
     const geo = new maplibregl.GeolocateControl({
@@ -133,21 +101,15 @@ export default function CityMap({
       showUserLocation: true,
     })
     map.addControl(geo, 'top-left')
-    geo.on('geolocate', (e) => {
-      console.log('geolocate:', e.coords)
-      // When geolocate succeeds, MapLibre draws its own blue dot/accuracy circle.
-      // We also clear any fallback manual marker:
+    geo.on('geolocate', () => {
       fallbackUserMarkerRef.current?.remove()
       fallbackUserMarkerRef.current = null
     })
-    geo.on('error', (err) => {
-      console.warn('Geolocate error:', err)
-      // Fallback: use navigator.geolocation once to set a custom marker
+    geo.on('error', () => {
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(
           ({ coords }) => {
             const ll: [number, number] = [coords.longitude, coords.latitude]
-            // add or move a custom marker
             if (!fallbackUserMarkerRef.current) {
               const el = document.createElement('div')
               el.className =
@@ -158,7 +120,7 @@ export default function CityMap({
             }
             map.flyTo({ center: ll, zoom: 16 })
           },
-          (e) => console.warn('navigator.geolocation failed:', e),
+          () => {},
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
         )
       }
@@ -167,82 +129,53 @@ export default function CityMap({
 
     map.on('load', () => {
       setCamera(map, city)
-      // Try to auto-trigger (desktop browsers allow; iOS may require a click)
       try { geo.trigger() } catch { /* ignore */ }
-
-      // Draw markers
-      markersRef.current.forEach(m => m.remove())
-      markersRef.current = []
-      places.forEach((p) => {
-        const el = document.createElement('div')
-        el.className = markerClass(p)
-        el.style.cursor = 'pointer'
-        el.tabIndex = 0
-        if (p.featured) {
-          const ping = document.createElement('span')
-          ping.className = 'absolute inset-0 rounded-full animate-ping bg-blue-400 opacity-30'
-          el.appendChild(ping)
-        }
-        const popup = new maplibregl.Popup({ offset: 12, closeButton: false })
-          .setHTML(popupHTML(city.slug, p))
-        const marker = new maplibregl.Marker({ element: el })
-          .setLngLat([p.location.lng, p.location.lat]).setPopup(popup).addTo(map)
-        const fly = () =>
-          map.flyTo({ center: [p.location.lng, p.location.lat], zoom: 15, essential: true })
-        el.addEventListener('click', () => { fly(); marker.togglePopup() })
-        el.addEventListener('mouseenter', () => marker.togglePopup())
-        // el.addEventListener('mouseleave', () => marker.togglePopup())
-        el.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fly(); marker.togglePopup() }
-        })
-        markersRef.current.push(marker)
-      })
     })
 
     map.on('error', (e) => console.warn('Map error:', (e as any).error || e))
 
-    return () => { map.remove(); mapInstance.current = null }
-  }, [styleUrl, city.center.lng, city.center.lat, city.bbox, places])
+    return () => {
+      popupMgrRef.current?.destroy()
+      map.remove()
+      mapInstance.current = null
+    }
+  }, [styleUrl, city.center.lng, city.center.lat, city.bbox])
 
-  // re-render markers on places change
+  // Render markers when places change
   useEffect(() => {
-    const map = mapInstance.current; if (!map) return
+    const map = mapInstance.current
+    if (!map) return
+
     markersRef.current.forEach(m => m.remove())
     markersRef.current = []
+
+    const pmgr = popupMgrRef.current
+    if (!pmgr) return
+    pmgr.hide()
+
     places.forEach((p) => {
       const el = document.createElement('div')
       el.className = markerClass(p)
       el.style.cursor = 'pointer'
       el.tabIndex = 0
+
       if (p.featured) {
         const ping = document.createElement('span')
         ping.className = 'absolute inset-0 rounded-full animate-ping bg-blue-400 opacity-30'
         el.appendChild(ping)
       }
-      const popup = new maplibregl.Popup({
-        offset: 12, closeButton: false,
-        // closeButton: true,
-        closeOnClick: false,        // Don't close when map is clicked
-        closeOnMove: false
-      }).setHTML(popupHTML(city.slug, p))
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat([p.location.lng, p.location.lat]).setPopup(popup).addTo(map)
-      // Adding some extra feature for hover on dot
-      const fly = () =>
-        map.flyTo({ center: [p.location.lng, p.location.lat], zoom: 15, essential: true })
-      el.addEventListener('click', () => {
-        fly();
-        marker.togglePopup();
-      })
 
-      // Optional: Add hover effect without toggling popup
-      el.addEventListener('mouseenter', () => {
-        el.style.transform = 'scale(1.1)'
-        el.style.transition = 'transform 0.2s'
-      })
-      el.addEventListener('mouseleave', () => {
-        el.style.transform = 'scale(1)'
-      })
+      const marker = new maplibregl.Marker({ element: el })
+        .setLngLat([p.location.lng, p.location.lat])
+        .addTo(map)
+
+      const lngLat: [number, number] = [p.location.lng, p.location.lat]
+      const html = popupHTML(city.slug, p)
+      const fly = () =>
+        map.flyTo({ center: lngLat, zoom: 15, essential: true })
+
+      pmgr.bindMarker(el, lngLat, html, fly)
+
       markersRef.current.push(marker)
     })
   }, [places, city.slug])
@@ -259,29 +192,27 @@ export default function CityMap({
   // Focus on place when focusPlaceSlug changes
   useEffect(() => {
     const map = mapInstance.current
-    if (!map || !focusPlaceSlug) return
+    const pmgr = popupMgrRef.current
+    if (!map || !pmgr || !focusPlaceSlug) return
 
     const focusedPlace = places.find(p => p.slug === focusPlaceSlug)
     if (!focusedPlace) return
 
-    // Fly to the place and open its popup
     map.flyTo({
       center: [focusedPlace.location.lng, focusedPlace.location.lat],
       zoom: 16,
       essential: true
     })
 
-    // Find and toggle the marker's popup
-    const markerIndex = places.findIndex(p => p.slug === focusPlaceSlug)
-    if (markerIndex !== -1 && markersRef.current[markerIndex]) {
-      markersRef.current[markerIndex].togglePopup()
-    }
-  }, [focusPlaceSlug, places])
+    pmgr.show(
+      [focusedPlace.location.lng, focusedPlace.location.lat],
+      popupHTML(city.slug, focusedPlace)
+    )
+  }, [focusPlaceSlug, places, city.slug])
 
   return (
     <div className="relative">
-      <div ref={mapRef} className="h-[60vh] w-full rounded-2xl overflow-hidden" />
-      {/* Manual “Mi ubicación” button to ensure a user gesture on iOS */}
+      <div ref={mapRef} className="h-[85vh] w-full rounded-2xl overflow-hidden" />
       <button
         type="button"
         onClick={() => geoCtrlRef.current?.trigger()}

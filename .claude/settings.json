@@ -11,7 +11,8 @@
       "Bash(npx ts-node:*)",
       "Bash(npx tsx:*)",
       "Bash(node -e \"const l = require\\(''lucide-react''\\); console.log\\(''Accessibility'' in l, ''Wrench'' in l, ''Settings2'' in l, ''HandHelping'' in l\\)\")",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(grep -r \"\\\\.maplibregl-popup\\\\|maplibregl-marker\\\\|map-popup\" /g/tourism-map/src --include=*.css --include=*.tsx)"
     ],
     "additionalDirectories": [
       "g:\\tourism-map\\src\\app\\api\\admin\\solicitudes"

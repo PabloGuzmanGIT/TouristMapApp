@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { MapPin, ArrowLeft } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { toast } from 'sonner'
 import { HYBRID_STYLE_URL } from '@/lib/map-config'
 import { COLOR_MAP } from '@/lib/constants'
+import { createPopupManager } from '@/lib/map-popup'
 
 interface MapItem {
     id: string
@@ -17,7 +18,7 @@ interface MapItem {
     lng: number
     count?: number
     category?: string
-    mainImage?: string // URL string actually
+    mainImage?: string
     city?: { slug: string, name: string }
 }
 
@@ -26,13 +27,12 @@ interface HeroMapProps {
 }
 
 function markerClass(type: 'region' | 'place', category?: string) {
-    const base = 'rounded-full border-2 border-white shadow-lg relative flex items-center justify-center cursor-pointer transition-transform hover:scale-110'
+    const base = 'rounded-full border-2 border-white shadow-lg relative flex items-center justify-center cursor-pointer transition-transform'
 
     if (type === 'region') {
         return `${base} w-10 h-10 bg-primary text-white font-bold text-sm`
     }
 
-    // Cast to any to avoid TS indexing error with loose string
     const color = category && (COLOR_MAP as any)[category]
         ? (COLOR_MAP as any)[category]
         : 'bg-green-600'
@@ -51,7 +51,6 @@ function popupHTML(item: MapItem) {
         `
     }
 
-    // Place Popup
     const img = item.mainImage
         ? `<img src="${item.mainImage}" style="width:100%; height:100px; object-fit:cover; border-radius:4px; margin-bottom:8px;" />`
         : ''
@@ -63,7 +62,7 @@ function popupHTML(item: MapItem) {
             ${img}
             <h3 style="font-weight:bold; margin-bottom:4px;">${item.name}</h3>
             <p style="font-size:10px; text-transform:uppercase; color:#666; margin-bottom:8px;">${item.category || 'Lugar'}</p>
-            <a href="/${citySlug}/places/${item.slug}" 
+            <a href="/${citySlug}/places/${item.slug}"
                target="_blank"
                style="display:block; background:#000; color:#fff; text-align:center; padding:6px; border-radius:4px; text-decoration:none; font-size:12px;">
                Ver Detalles
@@ -76,6 +75,7 @@ export default function HeroMap({ onClose }: HeroMapProps) {
     const mapContainer = useRef<HTMLDivElement>(null)
     const map = useRef<maplibregl.Map | null>(null)
     const markersRef = useRef<maplibregl.Marker[]>([])
+    const popupMgrRef = useRef<ReturnType<typeof createPopupManager> | null>(null)
 
     const [viewMode, setViewMode] = useState<'national' | 'local'>('national')
     const [loading, setLoading] = useState(true)
@@ -87,17 +87,18 @@ export default function HeroMap({ onClose }: HeroMapProps) {
         map.current = new maplibregl.Map({
             container: mapContainer.current,
             style: HYBRID_STYLE_URL,
-            center: [-75.015152, -9.189967], // Peru Center
+            center: [-75.015152, -9.189967],
             zoom: 5,
             attributionControl: { compact: true }
         })
 
         map.current.addControl(new maplibregl.NavigationControl(), 'bottom-right')
+        popupMgrRef.current = createPopupManager(map.current)
 
-        // Initial Fetch
         fetchRegions()
 
         return () => {
+            popupMgrRef.current?.destroy()
             map.current?.remove()
             map.current = null
         }
@@ -112,6 +113,12 @@ export default function HeroMap({ onClose }: HeroMapProps) {
         if (!map.current) return
         clearMarkers()
 
+        const pmgr = popupMgrRef.current
+        if (!pmgr) return
+        pmgr.hide()
+
+        const mapInstance = map.current
+
         items.forEach(item => {
             const el = document.createElement('div')
             el.className = markerClass(item.type, item.category)
@@ -120,25 +127,17 @@ export default function HeroMap({ onClose }: HeroMapProps) {
                 el.innerHTML = `<span>${item.count}</span>`
             }
 
-            const popup = new maplibregl.Popup({ offset: 15, closeButton: false })
-                .setHTML(popupHTML(item))
-
             const marker = new maplibregl.Marker({ element: el })
                 .setLngLat([item.lng, item.lat])
-                .setPopup(popup)
-                .addTo(map.current!)
+                .addTo(mapInstance)
 
-            // Interactions
-            el.addEventListener('mouseenter', () => marker.togglePopup())
-            el.addEventListener('mouseleave', () => marker.togglePopup())
-            el.addEventListener('click', (e) => {
-                e.stopPropagation()
-                if (item.type === 'region') {
-                    // Navigate to city page
-                    window.location.href = `/${item.slug}`
-                    // OR router.push(`/${item.slug}`) if using router hook
-                }
-            })
+            const lngLat: [number, number] = [item.lng, item.lat]
+            const html = popupHTML(item)
+            const onClick = item.type === 'region'
+                ? () => { window.location.href = `/${item.slug}` }
+                : undefined
+
+            pmgr.bindMarker(el, lngLat, html, onClick)
 
             markersRef.current.push(marker)
         })
@@ -148,7 +147,7 @@ export default function HeroMap({ onClose }: HeroMapProps) {
             const bounds = new maplibregl.LngLatBounds()
             items.forEach(i => bounds.extend([i.lng, i.lat]))
 
-            map.current.fitBounds(bounds, {
+            mapInstance.fitBounds(bounds, {
                 padding: viewMode === 'national' ? 50 : 100,
                 maxZoom: viewMode === 'national' ? 6 : 14,
                 duration: 2000
@@ -165,7 +164,6 @@ export default function HeroMap({ onClose }: HeroMapProps) {
             setViewMode('national')
             addMarkers(data)
 
-            // Reset view
             map.current?.flyTo({
                 center: [-75.015152, -9.189967],
                 zoom: 5,
@@ -204,9 +202,6 @@ export default function HeroMap({ onClose }: HeroMapProps) {
     return (
         <div className="absolute inset-0 z-10 w-full h-full animate-in fade-in duration-500 bg-neutral-100">
             <div ref={mapContainer} className="w-full h-full" />
-
-            {/* UI Overlays */}
-            {/* Back button removed as we redirect now */}
 
             <div className="absolute bottom-10 right-10 z-[10] flex flex-col gap-4">
                 <button
