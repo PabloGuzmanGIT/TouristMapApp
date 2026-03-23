@@ -7,6 +7,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SessionProvider } from "@/components/SessionProvider";
 import { Toaster } from 'sonner';
+import Script from 'next/script';
+import CookieBanner from '@/components/CookieBanner';
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -63,6 +65,12 @@ export default function RootLayout({
       <body
         className={`${playfair.variable} ${dmSans.variable} font-sans antialiased bg-background text-foreground`}
       >
+        <Script
+          id="adsbygoogle-init"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5604836893336008"
+        />
         <SessionProvider>
           <Navbar />
           {children}
@@ -73,6 +81,7 @@ export default function RootLayout({
             closeButton
             duration={4000}
           />
+          <CookieBanner />
         </SessionProvider>
       </body>
     </html>
