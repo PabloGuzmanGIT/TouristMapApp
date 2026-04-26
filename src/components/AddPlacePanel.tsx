@@ -113,9 +113,21 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
 
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
+        // Intento 1: Alta precision (moviles)
+        navigator.geolocation.getCurrentPosition(resolve, (err) => {
+            if (err.code === 3 || err.code === 2) {
+                // Intento 2: Baja precisióń (escritorio) sin límite estricto de tiempo
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: false,
+                    timeout: 25000,
+                    maximumAge: Infinity
+                })
+            } else {
+                reject(err)
+            }
+        }, {
           enableHighAccuracy: true,
-          timeout: 15000,
+          timeout: 10000,
           maximumAge: 0
         })
       })
@@ -133,9 +145,9 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
       if (error.code === 1) {
         errorMsg = '❌ Permiso denegado. Por favor, permite el acceso a tu ubicación en la configuración del navegador.'
       } else if (error.code === 2) {
-        errorMsg = '❌ Ubicación no disponible. Verifica tu conexión GPS.'
+        errorMsg = '❌ Ubicación no disponible. Verifica tu conexión.'
       } else if (error.code === 3) {
-        errorMsg = '❌ Tiempo de espera agotado. Intenta nuevamente.'
+        errorMsg = '❌ Tiempo de espera agotado. Tu dispositivo no logra encontrar coordenadas GPS.'
       }
 
       alert(errorMsg)
@@ -448,6 +460,8 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
                 }}
                 onSuccess={(result: any) => {
                   if (result.event === 'success') {
+                    document.body.style.overflow = ''
+                    document.body.style.pointerEvents = 'auto'
                     setImg1(result.info.secure_url)
                   }
                 }}
@@ -497,6 +511,8 @@ export default function AddPlacePanel({ onAdd, onCityChange, pickedCoord, initia
                 }}
                 onSuccess={(result: any) => {
                   if (result.event === 'success') {
+                    document.body.style.overflow = ''
+                    document.body.style.pointerEvents = 'auto'
                     setImg2(result.info.secure_url)
                   }
                 }}

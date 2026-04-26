@@ -19,7 +19,7 @@ export default function AddPlaceStandalone() {
   const router = useRouter()
   const [selectedCity, setSelectedCity] = React.useState<City | null>(null)
   const [picked, setPicked] = React.useState<LatLng | undefined>(undefined)
-  const [msg, setMsg] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [msg, setMsg] = React.useState<{ type: 'success' | 'error'; text: string; issues?: Record<string, string[]> } | null>(null)
 
   const handleCityChange = (city: City) => {
     setSelectedCity(city)
@@ -37,8 +37,16 @@ export default function AddPlaceStandalone() {
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Error al guardar')
+        const errorData = await response.json()
+        if (errorData.issues) {
+          setMsg({
+            type: 'error',
+            text: 'Revisa los siguientes campos:',
+            issues: errorData.issues
+          })
+          return
+        }
+        throw new Error(errorData.error || 'Error al guardar')
       }
 
       const result = await response.json()
@@ -140,6 +148,15 @@ export default function AddPlaceStandalone() {
                 }
               `}>
                 <p className="font-medium">{msg.text}</p>
+                {msg.issues && (
+                  <ul className="list-disc ml-5 mt-2 text-sm space-y-1">
+                    {Object.entries(msg.issues).map(([field, errors]) => (
+                      <li key={field}>
+                        <span className="font-semibold capitalize">{field}</span>: {errors[0]}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </div>

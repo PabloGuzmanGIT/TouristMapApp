@@ -52,6 +52,16 @@
   --footer: #0f2921;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0d0d0d;
+    --foreground: #faf8f4;
+    --foreground-secondary: #a3a3a3;
+    --surface: #1a1a1a;
+    --surface-alt: #262626;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

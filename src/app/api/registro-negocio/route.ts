@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { BusinessRegisterSchema } from '@/lib/validations/schemas'
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json()
+        const rawBody = await req.json()
+        const result = BusinessRegisterSchema.safeParse(rawBody)
+
+        if (!result.success) {
+            return NextResponse.json(
+                { error: 'Datos de formulario inválidos', issues: result.error.flatten().fieldErrors },
+                { status: 400 }
+            )
+        }
+
         const {
             name,
             category,
@@ -20,15 +30,7 @@ export async function POST(req: Request) {
             priceRange,
             amenities,
             schedule,
-        } = body
-
-        // Validaciones
-        if (!name || !category || !cityId || !ownerName || !ownerEmail) {
-            return NextResponse.json(
-                { error: 'Nombre del negocio, categoria, ciudad, nombre y email del propietario son requeridos' },
-                { status: 400 }
-            )
-        }
+        } = result.data
 
         // Verificar que la ciudad existe
         const city = await prisma.city.findUnique({ where: { id: cityId } })

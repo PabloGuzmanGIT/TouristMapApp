@@ -31,6 +31,7 @@ export default function RegistroNegocioPage() {
     const [loading, setLoading] = useState(false)
     const [submitted, setSubmitted] = useState(false)
     const [error, setError] = useState('')
+    const [errorIssues, setErrorIssues] = useState<Record<string, string[]>>({})
     const [loadingGPS, setLoadingGPS] = useState(false)
     const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null)
     const [selectedCity, setSelectedCity] = useState<City | null>(null)
@@ -126,9 +127,19 @@ export default function RegistroNegocioPage() {
         setLoadingGPS(true)
         try {
             const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                navigator.geolocation.getCurrentPosition(resolve, (err) => {
+                    if (err.code === 3 || err.code === 2) {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: false,
+                            timeout: 25000,
+                            maximumAge: Infinity
+                        })
+                    } else {
+                        reject(err)
+                    }
+                }, {
                     enableHighAccuracy: true,
-                    timeout: 15000,
+                    timeout: 10000,
                     maximumAge: 0
                 })
             })
@@ -143,7 +154,7 @@ export default function RegistroNegocioPage() {
             } else if (error.code === 2) {
                 alert('Ubicacion no disponible. Verifica tu conexion GPS y WiFi.')
             } else if (error.code === 3) {
-                alert('Tiempo de espera agotado. Intenta nuevamente con mejor senal.')
+                alert('Tiempo de espera agotado. Probablemente estés en una computadora de escritorio sin chip GPS.')
             }
         } finally {
             setLoadingGPS(false)
@@ -157,6 +168,7 @@ export default function RegistroNegocioPage() {
         e.preventDefault()
         if (!canSubmit) return
         setError('')
+        setErrorIssues({})
         setLoading(true)
 
         try {
@@ -183,7 +195,13 @@ export default function RegistroNegocioPage() {
             })
 
             const data = await res.json()
-            if (!res.ok) throw new Error(data.error || 'Error al enviar la solicitud')
+            if (!res.ok) {
+                if (data.issues) {
+                    setErrorIssues(data.issues)
+                    throw new Error('Revisa los campos marcados abajo')
+                }
+                throw new Error(data.error || 'Error al enviar la solicitud')
+            }
             setSubmitted(true)
         } catch (err: any) {
             setError(err.message)
@@ -500,7 +518,7 @@ export default function RegistroNegocioPage() {
                                             <CldUploadWidget
                                                 uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'tourism-map-places'}
                                                 options={{ maxFiles: 1, maxFileSize: 5000000, clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'], folder: 'tourism-map/places' }}
-                                                onSuccess={(result: any) => { if (result.event === 'success') setImg1(result.info.secure_url) }}
+                                                onSuccess={(result: any) => { if (result.event === 'success') { document.body.style.overflow = ''; document.body.style.pointerEvents = 'auto'; setImg1(result.info.secure_url) } }}
                                             >
                                                 {({ open }) => (
                                                     <button type="button" onClick={() => open()} className="w-full h-40 border-2 border-dashed border-foreground/20 rounded-lg hover:border-primary transition-colors flex flex-col items-center justify-center gap-2 text-foreground/50 hover:text-primary">
@@ -530,7 +548,7 @@ export default function RegistroNegocioPage() {
                                             <CldUploadWidget
                                                 uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'tourism-map-places'}
                                                 options={{ maxFiles: 1, maxFileSize: 5000000, clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'], folder: 'tourism-map/places' }}
-                                                onSuccess={(result: any) => { if (result.event === 'success') setImg2(result.info.secure_url) }}
+                                                onSuccess={(result: any) => { if (result.event === 'success') { document.body.style.overflow = ''; document.body.style.pointerEvents = 'auto'; setImg2(result.info.secure_url) } }}
                                             >
                                                 {({ open }) => (
                                                     <button type="button" onClick={() => open()} className="w-full h-40 border-2 border-dashed border-foreground/20 rounded-lg hover:border-primary transition-colors flex flex-col items-center justify-center gap-2 text-foreground/50 hover:text-primary">
@@ -704,7 +722,22 @@ export default function RegistroNegocioPage() {
                                 </div>
                             )}
 
-                            {/* Submit */}
+                            {/* Submit and Errors */}
+                            {(error || Object.keys(errorIssues).length > 0) && (
+                                <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800">
+                                    <h4 className="font-semibold">{error || 'Revisa los siguientes campos:'}</h4>
+                                    {Object.keys(errorIssues).length > 0 && (
+                                        <ul className="list-disc ml-5 mt-2 space-y-1">
+                                            {Object.entries(errorIssues).map(([field, msgs]) => (
+                                                <li key={field}>
+                                                    <span className="font-semibold capitalize">{field}</span>: {msgs[0]}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
                                 disabled={!canSubmit || loading}

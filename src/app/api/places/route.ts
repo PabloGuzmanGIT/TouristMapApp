@@ -191,10 +191,21 @@ export async function GET(req: Request) {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
+import { PlaceCreateSchema } from '@/lib/validations/schemas'
+
 export async function POST(req: Request) {
   try {
-    const b = await req.json()
-    // b: { citySlug, areaSlug?, name, slug?, category, featured?, short?, lat, lng, images?[], bookingUrl?, website?, phone?, address? }
+    const rawBody = await req.json()
+    const result = PlaceCreateSchema.safeParse(rawBody)
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: 'Datos de formulario inválidos', issues: result.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
+
+    const b = result.data
 
     const city = await prisma.city.findUnique({ where: { slug: b.citySlug } })
     if (!city) return NextResponse.json({ error: 'Ciudad no existe' }, { status: 400 })
@@ -203,7 +214,7 @@ export async function POST(req: Request) {
       ? await prisma.area.findFirst({ where: { slug: b.areaSlug, cityId: city.id } })
       : null
 
-    const slug = (b.slug ?? b.name)
+    const slug = (b.slug || b.name)
       .toString()
       .trim()
       .toLowerCase()
@@ -216,12 +227,12 @@ export async function POST(req: Request) {
         areaId: area?.id ?? null,
         name: b.name,
         slug,
-        category: b.category,
-        featured: !!b.featured,
+        category: b.category as any, // Enum
+        featured: b.featured,
         short: b.short ?? null,
-        lat: Number(b.lat),
-        lng: Number(b.lng),
-        images: Array.isArray(b.images) ? b.images : [],
+        lat: b.lat,
+        lng: b.lng,
+        images: b.images,
         bookingUrl: b.bookingUrl ?? null,
         website: b.website ?? null,
         phone: b.phone ?? null,
