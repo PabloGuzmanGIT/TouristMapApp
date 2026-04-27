@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Edit, Trash2, Plus, MapPin, Eye } from 'lucide-react'
+import { Edit, Trash2, Plus, MapPin, Eye, Shield } from 'lucide-react'
 
 type Place = {
     id: string
@@ -17,6 +17,12 @@ type Place = {
         name: string
         slug: string
     }
+    ownerId: string | null
+    isVerified: boolean
+    owner: {
+        email: string
+        name: string | null
+    } | null
 }
 
 export default function AdminPlacesPage() {
@@ -43,17 +49,22 @@ export default function AdminPlacesPage() {
     }, [router])
 
     useEffect(() => {
-        fetch('/api/places')
-            .then(res => res.json())
-            .then(data => {
-                setPlaces(data)
-                setLoading(false)
-            })
-            .catch(err => {
-                console.error('Error fetching places:', err)
-                setLoading(false)
-            })
-    }, [])
+        if (!checking) {
+            fetch('/api/admin/places', { credentials: 'include' })
+                .then(res => {
+                    if (!res.ok) throw new Error('Status ' + res.status)
+                    return res.json()
+                })
+                .then(data => {
+                    setPlaces(Array.isArray(data) ? data : [])
+                    setLoading(false)
+                })
+                .catch(err => {
+                    console.error('Error fetching places:', err)
+                    setLoading(false)
+                })
+        }
+    }, [checking])
 
     async function handleDelete(id: string, name: string) {
         if (!confirm(`¿Eliminar "${name}"?`)) return
@@ -71,6 +82,25 @@ export default function AdminPlacesPage() {
         } catch (error) {
             console.error('Error deleting:', error)
             alert('❌ Error al eliminar el lugar')
+        }
+    }
+
+    async function handleVerify(id: string, name: string) {
+        if (!confirm(`¿Aprobar Sello Oficial para "${name}"? El dueño será notificado por correo.`)) return
+
+        try {
+            const res = await fetch(`/api/admin/places/${id}/verify`, {
+                method: 'PATCH',
+            })
+
+            if (!res.ok) throw new Error('Error al verificar')
+
+            alert('✅ Negocio verificado exitosamente')
+            // Refresh list
+            setPlaces(prev => prev.map(p => p.id === id ? { ...p, isVerified: true } : p))
+        } catch (error) {
+            console.error('Error verifying:', error)
+            alert('❌ Error al verificar el negocio')
         }
     }
 
@@ -145,7 +175,7 @@ export default function AdminPlacesPage() {
                                     <th className="text-left p-4 font-semibold">Departamento</th>
                                     <th className="text-left p-4 font-semibold">Categoría</th>
                                     <th className="text-left p-4 font-semibold">Estado</th>
-                                    <th className="text-left p-4 font-semibold">Destacado</th>
+                                    <th className="text-left p-4 font-semibold">Sello Oficial</th>
                                     <th className="text-right p-4 font-semibold">Acciones</th>
                                 </tr>
                             </thead>
@@ -195,10 +225,21 @@ export default function AdminPlacesPage() {
                                             </span>
                                         </td>
                                         <td className="p-4">
-                                            {place.featured ? (
-                                                <span className="text-accent">⭐ Sí</span>
+                                            {place.ownerId ? (
+                                                place.isVerified ? (
+                                                    <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 px-2 py-1 rounded text-xs font-bold">
+                                                        ✅ Verificado
+                                                    </span>
+                                                ) : (
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 px-2 py-1 rounded text-xs font-bold">
+                                                            ⏳ En revisión
+                                                        </span>
+                                                        <span className="text-[10px] text-foreground/50">{place.owner?.email}</span>
+                                                    </div>
+                                                )
                                             ) : (
-                                                <span className="text-foreground/40">—</span>
+                                                <span className="text-foreground/40 text-sm">— No aplica</span>
                                             )}
                                         </td>
                                         <td className="p-4">
@@ -211,6 +252,15 @@ export default function AdminPlacesPage() {
                                                 >
                                                     <Eye className="w-4 h-4" />
                                                 </Link>
+                                                {place.ownerId && !place.isVerified && (
+                                                    <button
+                                                        onClick={() => handleVerify(place.id, place.name)}
+                                                        className="p-2 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg transition-colors"
+                                                        title="Aprobar Sello Oficial"
+                                                    >
+                                                        <Shield className="w-4 h-4" />
+                                                    </button>
+                                                )}
                                                 <Link
                                                     href={`/admin/places/${place.id}/edit`}
                                                     className="p-2 hover:bg-primary/10 text-primary rounded-lg transition-colors"

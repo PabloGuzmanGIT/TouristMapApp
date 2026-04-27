@@ -24,6 +24,8 @@ export async function GET() {
                 role: true,
                 emailVerified: true,
                 createdAt: true,
+                managedCityId: true,
+                managedAreaId: true,
             },
             orderBy: { createdAt: 'desc' }
         })

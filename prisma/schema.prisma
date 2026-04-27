@@ -143,6 +143,7 @@ model Area {
   bboxN     Float?
 
   places Place[]
+  editors User[] @relation("AreaEditors")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -185,6 +186,10 @@ model Place {
   ownerName  String?
   ownerEmail String?
   ownerPhone String?
+
+  ownerId    String?
+  owner      User?   @relation("UserPlaces", fields: [ownerId], references: [id], onDelete: SetNull)
+  isVerified Boolean @default(false)
 
   // agregados de reseñas (publicadas)
   ratingAvg   Float @default(0)
@@ -322,6 +327,10 @@ model User {
   // For editors: can only manage places/reviews in their assigned city
   managedCityId String?
   managedCity   City?    @relation("CityEditors", fields: [managedCityId], references: [id], onDelete: SetNull)
+
+  // For editors: can manage a specific area within a city (e.g. town)
+  managedAreaId String?
+  managedArea   Area?    @relation("AreaEditors", fields: [managedAreaId], references: [id], onDelete: SetNull)
   
   // Password recovery
   resetToken        String?   @unique
@@ -332,6 +341,7 @@ model User {
   sessions Session[]
   
   // App relations
+  places        Place[]         @relation("UserPlaces")
   reviews       PlaceReview[]
   comments      ReviewComment[]
   reviewHelpful ReviewHelpful[]

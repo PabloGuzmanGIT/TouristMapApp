@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import {
     ArrowLeft, Store, MapPin, User, Mail, Phone, Send, CheckCircle,
@@ -27,6 +28,7 @@ function slugify(s: string) {
 }
 
 export default function RegistroNegocioPage() {
+    const { data: session, status } = useSession()
     const [cities, setCities] = useState<City[]>([])
     const [loading, setLoading] = useState(false)
     const [submitted, setSubmitted] = useState(false)
@@ -85,6 +87,16 @@ export default function RegistroNegocioPage() {
             .then(data => setCities(data))
             .catch(() => { })
     }, [])
+
+    useEffect(() => {
+        if (session?.user) {
+            setFormData(prev => ({
+                ...prev,
+                ownerName: prev.ownerName || session.user.name || '',
+                ownerEmail: prev.ownerEmail || session.user.email || '',
+            }))
+        }
+    }, [session])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
         const { name, value } = e.target
@@ -237,6 +249,54 @@ export default function RegistroNegocioPage() {
                         <Link
                             href="/"
                             className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-all"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Volver al inicio
+                        </Link>
+                    </div>
+                </div>
+            </main>
+        )
+    }
+
+    if (status === 'loading') {
+        return (
+            <main className="min-h-screen bg-background flex items-center justify-center p-4">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </main>
+        )
+    }
+
+    if (status === 'unauthenticated') {
+        return (
+            <main className="min-h-screen bg-background flex items-center justify-center p-4">
+                <div className="w-full max-w-md text-center bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-8 shadow-xl">
+                    <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <Store className="w-8 h-8 text-accent" />
+                    </div>
+                    <h1 className="text-2xl font-bold mb-4">Inicia sesión para continuar</h1>
+                    <p className="text-foreground/60 mb-8">
+                        Para registrar un negocio y mantener el control del mismo, primero debes tener una cuenta.
+                    </p>
+                    <div className="space-y-4">
+                        <Link
+                            href="/login?callbackUrl=/registro-negocio"
+                            className="flex items-center justify-center gap-2 w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-all"
+                        >
+                            <User className="w-5 h-5" />
+                            Iniciar Sesión
+                        </Link>
+                        <Link
+                            href="/register/form?callbackUrl=/registro-negocio"
+                            className="flex items-center justify-center gap-2 w-full border border-foreground/20 text-foreground py-3 rounded-lg font-semibold hover:bg-foreground/5 transition-all"
+                        >
+                            Crear Cuenta
+                        </Link>
+                    </div>
+                    <div className="mt-8">
+                        <Link
+                            href="/"
+                            className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-foreground transition-colors"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             Volver al inicio

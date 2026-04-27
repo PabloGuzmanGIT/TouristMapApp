@@ -54,3 +54,34 @@ public/workbox-*.js.map
 
 # implementaciones locales
 /implementaciones
+
+# Playwright test results & reports
+/playwright-report
+/test-results
+/report.json
+
+# Loose scripts at root (not needed in production)
+check-data.ts
+check-env.js
+migrate-data.ts
+test-connection.ts
+CORRECT_ENV_REFERENCE.txt
+
+# Local documentation (not needed in production)
+ADMIN_AUTH.md
+CLOUDINARY_SETUP.md
+DEPLOYMENT_GUIDE.md
+DEUDA_TECNICA.md
+NEXTAUTH_SETUP.md
+PASSWORD_RECOVERY.md
+
+# Scratch / temp folders
+/scratch
+/HTMLupdateviews
+
+# Claude AI context files
+/.claude
+CLAUDE.md
+
+# TypeScript incremental build info
+tsconfig.tsbuildinfo

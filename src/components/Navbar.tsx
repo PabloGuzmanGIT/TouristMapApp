@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
-import { MapPin, Plus, Menu, X, User, LogOut, Shield, MessageSquare, Home, Compass, Heart } from 'lucide-react'
+import { MapPin, Plus, Menu, X, User, LogOut, Shield, MessageSquare, Home, Compass, Heart, Store } from 'lucide-react'
 
 export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -77,6 +77,15 @@ export default function Navbar() {
                                                     <MessageSquare className="w-4 h-4" />
                                                     Mis Reviews
                                                 </Link>
+                                                
+                                                <Link
+                                                    href="/mis-negocios"
+                                                    className="flex items-center gap-2 px-4 py-2 hover:bg-foreground/5 transition-colors"
+                                                    onClick={() => setProfileDropdownOpen(false)}
+                                                >
+                                                    <Store className="w-4 h-4" />
+                                                    Mis Negocios
+                                                </Link>
 
                                                 {isAdmin && (
                                                     <>
@@ -94,7 +103,15 @@ export default function Navbar() {
                                                             onClick={() => setProfileDropdownOpen(false)}
                                                         >
                                                             <Shield className="w-4 h-4" />
-                                                            Panel Admin
+                                                            Panel Admin (Lugares)
+                                                        </Link>
+                                                        <Link
+                                                            href="/admin/users"
+                                                            className="flex items-center gap-2 px-4 py-2 hover:bg-foreground/5 transition-colors"
+                                                            onClick={() => setProfileDropdownOpen(false)}
+                                                        >
+                                                            <User className="w-4 h-4" />
+                                                            Gestionar Usuarios
                                                         </Link>
                                                     </>
                                                 )}
@@ -192,6 +209,14 @@ export default function Navbar() {
                                     Mis Reviews
                                 </Link>
 
+                                <Link
+                                    href="/mis-negocios"
+                                    className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5"
+                                >
+                                    <Store className="w-4 h-4" />
+                                    Mis Negocios
+                                </Link>
+
                                 {isAdmin && (
                                     <>
                                         <div className="border-t border-foreground/10 pt-2 mt-1">
@@ -209,7 +234,14 @@ export default function Navbar() {
                                             className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5"
                                         >
                                             <Shield className="w-4 h-4" />
-                                            Panel Admin
+                                            Panel Admin (Lugares)
+                                        </Link>
+                                        <Link
+                                            href="/admin/users"
+                                            className="flex items-center gap-3 px-2 py-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-foreground/5"
+                                        >
+                                            <User className="w-4 h-4" />
+                                            Gestionar Usuarios
                                         </Link>
                                     </>
                                 )}

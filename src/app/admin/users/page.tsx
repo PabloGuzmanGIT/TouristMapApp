@@ -45,9 +45,14 @@ export default function AdminUsersPage() {
 
     async function fetchUsers() {
         try {
-            const res = await fetch('/api/admin/users')
+            const res = await fetch('/api/admin/users', { credentials: 'include' })
+            if (!res.ok) {
+                console.error('Error fetching users: status', res.status)
+                setLoading(false)
+                return
+            }
             const data = await res.json()
-            setUsers(data)
+            setUsers(Array.isArray(data) ? data : [])
             setLoading(false)
         } catch (error) {
             console.error('Error fetching users:', error)

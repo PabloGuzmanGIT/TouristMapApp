@@ -1,57 +1,70 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signIn } from 'next-auth/react'
 import Link from 'next/link'
-import { Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, User, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 
-function LoginForm() {
+function RegisterForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const callbackUrl = searchParams.get('callbackUrl')
+
     const [formData, setFormData] = useState({
+        name: '',
         email: '',
         password: '',
+        confirmPassword: '',
     })
     const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
-    const [successMessage, setSuccessMessage] = useState('')
-
-    useEffect(() => {
-        if (searchParams.get('registered') === 'true') {
-            setSuccessMessage('✅ Cuenta creada exitosamente. Inicia sesión para continuar.')
-        }
-    }, [searchParams])
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         setError('')
-        setSuccessMessage('')
+
+        // Validations
+        if (formData.password.length < 6) {
+            setError('La contraseña debe tener al menos 6 caracteres')
+            return
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            setError('Las contraseñas no coinciden')
+            return
+        }
+
         setLoading(true)
 
         try {
-            const result = await signIn('credentials', {
-                email: formData.email,
-                password: formData.password,
-                redirect: false,
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                }),
             })
 
-            if (result?.error) {
-                setError('Credenciales incorrectas')
-                setLoading(false)
-                return
+            const data = await res.json()
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Error al registrarse')
             }
 
-            // Check for return URL
-            const callbackUrl = searchParams.get('callbackUrl')
-            const returnUrl = callbackUrl || sessionStorage.getItem('returnUrl') || '/'
-            sessionStorage.removeItem('returnUrl')
-
-            router.push(returnUrl)
-            router.refresh()
-        } catch (err) {
-            setError('Error al iniciar sesión')
+            // Success - redirect to login
+            const redirectUrl = new URL('/login', window.location.origin)
+            redirectUrl.searchParams.set('registered', 'true')
+            if (callbackUrl) {
+                redirectUrl.searchParams.set('callbackUrl', callbackUrl)
+            }
+            router.push(redirectUrl.pathname + redirectUrl.search)
+        } catch (err: any) {
+            setError(err.message)
+        } finally {
             setLoading(false)
         }
     }
@@ -61,19 +74,22 @@ function LoginForm() {
             <div className="w-full max-w-md">
                 {/* Back Link */}
                 <Link
-                    href="/"
+                    href={callbackUrl ? '/register' : '/'}
                     className="inline-flex items-center gap-2 text-foreground/60 hover:text-foreground mb-6 transition-colors"
                 >
                     <ArrowLeft className="w-4 h-4" />
-                    Volver al inicio
+                    {callbackUrl ? 'Volver' : 'Volver al inicio'}
                 </Link>
 
                 {/* Card */}
                 <div className="bg-background/70 backdrop-blur-md border border-foreground/10 rounded-2xl p-8 shadow-xl">
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold mb-2">Iniciar Sesión</h1>
+                        <h1 className="text-3xl font-bold mb-2">Crear Cuenta</h1>
                         <p className="text-foreground/60">
-                            Bienvenido de vuelta a Explora Perú
+                            {callbackUrl === '/registro-negocio' 
+                                ? 'Crea tu cuenta para registrar tu negocio'
+                                : 'Únete a la comunidad de Explora Perú'
+                            }
                         </p>
                     </div>
 
@@ -83,13 +99,23 @@ function LoginForm() {
                         </div>
                     )}
 
-                    {successMessage && (
-                        <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 text-sm">
-                            {successMessage}
-                        </div>
-                    )}
-
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Name */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Nombre Completo</label>
+                            <div className="relative">
+                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.name}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                    className="w-full pl-11 pr-4 py-3 border border-foreground/20 rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                    placeholder="Juan Pérez"
+                                />
+                            </div>
+                        </div>
+
                         {/* Email */}
                         <div>
                             <label className="block text-sm font-medium mb-2">Correo Electrónico</label>
@@ -108,15 +134,7 @@ function LoginForm() {
 
                         {/* Password */}
                         <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <label className="block text-sm font-medium">Contraseña</label>
-                                <Link
-                                    href="/forgot-password"
-                                    className="text-xs text-primary hover:underline"
-                                >
-                                    ¿Olvidaste tu contraseña?
-                                </Link>
-                            </div>
+                            <label className="block text-sm font-medium mb-2">Contraseña</label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
                                 <input
@@ -125,7 +143,7 @@ function LoginForm() {
                                     value={formData.password}
                                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                                     className="w-full pl-11 pr-11 py-3 border border-foreground/20 rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                                    placeholder="Tu contraseña"
+                                    placeholder="Mínimo 6 caracteres"
                                 />
                                 <button
                                     type="button"
@@ -137,13 +155,36 @@ function LoginForm() {
                             </div>
                         </div>
 
+                        {/* Confirm Password */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Confirmar Contraseña</label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    required
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                    className="w-full pl-11 pr-11 py-3 border border-foreground/20 rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                    placeholder="Repite tu contraseña"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
+                            </div>
+                        </div>
+
                         {/* Submit */}
                         <button
                             type="submit"
                             disabled={loading}
                             className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                            {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
                         </button>
                     </form>
 
@@ -157,7 +198,7 @@ function LoginForm() {
                         </div>
                     </div>
 
-                    {/* OAuth Buttons (preparado para futuro) */}
+                    {/* OAuth Buttons */}
                     <button
                         type="button"
                         disabled
@@ -172,11 +213,11 @@ function LoginForm() {
                         Google (Próximamente)
                     </button>
 
-                    {/* Register Link */}
+                    {/* Login Link */}
                     <p className="text-center mt-6 text-sm text-foreground/60">
-                        ¿No tienes cuenta?{' '}
-                        <Link href={`/register${searchParams.get('callbackUrl') ? '?callbackUrl=' + encodeURIComponent(searchParams.get('callbackUrl') as string) : ''}`} className="text-primary hover:underline font-semibold">
-                            Regístrate gratis
+                        ¿Ya tienes cuenta?{' '}
+                        <Link href={`/login${callbackUrl ? '?callbackUrl=' + encodeURIComponent(callbackUrl) : ''}`} className="text-primary hover:underline font-semibold">
+                            Inicia sesión
                         </Link>
                     </p>
                 </div>
@@ -185,14 +226,14 @@ function LoginForm() {
     )
 }
 
-export default function LoginPage() {
+export default function RegisterPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="text-foreground/60">Cargando...</div>
             </div>
         }>
-            <LoginForm />
+            <RegisterForm />
         </Suspense>
     )
 }
